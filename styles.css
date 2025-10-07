@@ -266,6 +266,10 @@ h1, h2, h3, h4 {
     margin-top: 0;
     padding-bottom: 15vh;
     transition: opacity 0.3s ease-in-out;
+    /* Otimização de carregamento */
+    background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url('images/fundo1.jpg');
 }
 
 .hero.loaded {
@@ -404,9 +408,43 @@ h1, h2, h3, h4 {
     height: auto;
     object-fit: contain;
     object-position: center;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.3s ease;
     display: block;
     border-radius: 6px;
+    /* Lazy loading */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.product-image img.loaded {
+    opacity: 1;
+}
+
+/* Placeholder enquanto carrega */
+.product-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 6px;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.product-image img.loaded + .product-image::before {
+    display: none;
 }
 
 .product-image img[src*="data:image/svg"] {
@@ -2527,7 +2565,9 @@ h1, h2, h3, h4 {
 /* Telas menores que 600px - usar fundo2.jpg */
 @media (max-width: 600px) {
     .hero {
-        background-image: url('images/fundo2.jpg');
+        background-image: 
+            linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+            url('images/fundo2.jpg');
         background-position: center top;
     }
     

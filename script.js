@@ -1,3 +1,57 @@
+// Sistema de Lazy Loading para Imagens
+class ImageLoader {
+    constructor() {
+        this.imageObserver = null;
+        this.init();
+    }
+
+    init() {
+        // Verificar se o navegador suporta Intersection Observer
+        if ('IntersectionObserver' in window) {
+            this.imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        this.loadImage(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                rootMargin: '50px 0px', // Carregar 50px antes de aparecer na tela
+                threshold: 0.01
+            });
+        }
+    }
+
+    loadImage(img) {
+        if (img.dataset.src) {
+            const image = new Image();
+            image.onload = () => {
+                img.src = img.dataset.src;
+                img.classList.add('loaded');
+                img.removeAttribute('data-src');
+            };
+            image.onerror = () => {
+                // Fallback para imagem quebrada
+                img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbSBuZW8gZW5jb250cmFkYTwvdGV4dD48L3N2Zz4=';
+                img.classList.add('loaded');
+            };
+            image.src = img.dataset.src;
+        }
+    }
+
+    observe(img) {
+        if (this.imageObserver) {
+            this.imageObserver.observe(img);
+        } else {
+            // Fallback para navegadores sem Intersection Observer
+            this.loadImage(img);
+        }
+    }
+}
+
+// Instância global do ImageLoader
+const imageLoader = new ImageLoader();
+
 // Preload da imagem de fundo
 document.addEventListener('DOMContentLoaded', function() {
     const hero = document.querySelector('.hero');
@@ -1238,7 +1292,7 @@ function createProductCard(product) {
     
     // Se não tem imagem válida, usar placeholder
     const imageWithFallback = displayImage ? `
-        <img src="${displayImage}" alt="${product.name}" 
+        <img data-src="${displayImage}" alt="${product.name}" 
              onerror="this.onerror=null; this.src='${placeholderImage}'"
              onload="adjustImageContainer(this)">
     ` : `
@@ -3307,6 +3361,12 @@ function applyFilters(category) {
         filteredProducts.forEach(product => {
             const productCard = createProductCard(product);
             grid.appendChild(productCard);
+            
+            // Ativar lazy loading para imagens do card
+            const img = productCard.querySelector('img[data-src]');
+            if (img) {
+                imageLoader.observe(img);
+            }
         });
         } else {
             // Mostrar mensagem quando não há produtos

@@ -197,6 +197,27 @@ function convertFileNameToDriveUrl(fileName) {
     return possibleUrls[0]; // Retorna a primeira opção
 }
 
+// Função para testar se uma imagem carrega
+function testImageLoad(url, callback) {
+    const img = new Image();
+    img.onload = () => callback(true);
+    img.onerror = () => callback(false);
+    img.src = url;
+}
+
+// Função para obter URL de imagem com fallback automático
+function getImageWithFallback(fileId) {
+    const urls = [
+        `https://images.weserv.nl/?url=drive.google.com/uc?export=view&id=${fileId}&w=800&h=600&fit=cover`,
+        `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`,
+        `https://lh3.googleusercontent.com/d/${fileId}`,
+        `https://drive.google.com/uc?export=view&id=${fileId}`,
+        `https://docs.google.com/uc?export=view&id=${fileId}`
+    ];
+    
+    return urls[0]; // Retorna a primeira opção (proxy)
+}
+
 // Função para converter URL do Google Drive para formato direto
 function convertGoogleDriveUrl(url) {
     if (!url || typeof url !== 'string') return '';
@@ -231,16 +252,17 @@ function convertGoogleDriveUrl(url) {
     }
     
     if (fileId) {
-        // Tentar múltiplas opções para contornar CORS
+        // Tentar múltiplas opções para contornar CORS - priorizando proxies
         const options = [
+            `https://images.weserv.nl/?url=drive.google.com/uc?export=view&id=${fileId}&w=800&h=600&fit=cover`,
             `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`,
             `https://lh3.googleusercontent.com/d/${fileId}`,
             `https://drive.google.com/uc?export=view&id=${fileId}`,
-            `https://images.weserv.nl/?url=drive.google.com/uc?export=view&id=${fileId}`
+            `https://docs.google.com/uc?export=view&id=${fileId}`
         ];
         
-        // URLs geradas para fallback
-        return options[0]; // Retorna a primeira opção (thumbnail)
+        // URLs geradas para fallback - usar proxy primeiro
+        return options[0]; // Retorna a primeira opção (proxy)
     }
     
     // URL não convertida
@@ -1239,10 +1261,18 @@ function createProductCard(product) {
     // Se não tem imagem válida, usar placeholder
     const imageWithFallback = displayImage ? `
         <img src="${displayImage}" alt="${product.name}" 
-             onerror="this.onerror=null; this.src='${placeholderImage}'"
-             onload="adjustImageContainer(this)">
+             onerror="this.onerror=null; this.src='${placeholderImage}'; this.style.display='block'; this.parentElement.classList.remove('loading');"
+             onload="adjustImageContainer(this); this.style.display='block'; this.parentElement.classList.remove('loading');"
+             onloadstart="this.parentElement.classList.add('loading');"
+             style="display:none;"
+             loading="lazy"
+             crossorigin="anonymous">
     ` : `
-        <img src="${placeholderImage}" alt="${product.name}" onload="adjustImageContainer(this)">
+        <img src="${placeholderImage}" alt="${product.name}" 
+             onload="adjustImageContainer(this); this.style.display='block'; this.parentElement.classList.remove('loading');"
+             onloadstart="this.parentElement.classList.add('loading');"
+             style="display:none;"
+             loading="lazy">
     `;
     
     // Verificar se tem múltiplas imagens

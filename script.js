@@ -1262,7 +1262,6 @@ function createProductCard(product) {
         <div class="product-content">
             <h3 class="product-title" onclick="openProductModal(${product.id})" style="cursor: pointer;">${product.name}</h3>
             ${product.description ? `<p class="product-description"><strong>Descrição do produto:</strong> ${truncateDescription(product.description)}</p>` : ''}
-            ${product.publico ? `<div class="product-audience"><i class="fas fa-users"></i> <span>${product.publico.charAt(0).toUpperCase() + product.publico.slice(1)}</span></div>` : ''}
             <div class="product-price">
                 ${product.priceRange ? 
                     `<span class="current-price" id="price-${product.id}">R$ ${formatPrice(product.priceRange.min)}</span>
@@ -1929,7 +1928,6 @@ function openProductModal(productId) {
             <div class="product-detail-info">
                 <h2 class="product-detail-title">${product.name}</h2>
                 ${product.description ? `<p class="product-detail-description"><strong>Descrição do produto:</strong> ${product.description}</p>` : ''}
-                ${product.publico ? `<div class="product-detail-audience"><i class="fas fa-users"></i> <span>Público: ${product.publico.charAt(0).toUpperCase() + product.publico.slice(1)}</span></div>` : ''}
                         <div class="product-detail-price">
                             ${product.priceRange ? 
                                 `<span class="current-price" id="modal-price-${product.id}">R$ ${formatPrice(product.priceRange.min)}</span>

@@ -3,417 +3,449 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stylus Concept - Catálogo Online</title>
+    <title>Stylus Concept - Onde Moda Encontra Identidade</title>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="shortcut icon" href="images/favicon.ico">
     <link rel="apple-touch-icon" href="images/favicon.ico">
-    <link rel="preload" as="image" href="images/fundo1.jpg">
-    <link rel="preload" as="image" href="images/fundo2.jpg">
-    <link rel="stylesheet" href="styles.css">
+    <!-- Preload das imagens da seção de tendências para melhor performance -->
+    <link rel="preload" as="image" href="images/raoupas.jpg">
+    <link rel="preload" as="image" href="images/calçados.jpg">
+    <link rel="preload" as="image" href="images/acessorios.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="home-styles.css">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <nav class="navbar">
-            <div class="container">
-                <div class="nav-brand">
-                    <img src="images/logo.png" alt="Stylus's Concept" class="logo">
-                </div>
-                <ul class="nav-menu">
-                    <li><a href="#roupas" class="nav-link">Roupas</a></li>
-                    <li><a href="#calcados" class="nav-link">Calçados</a></li>
-                    <li><a href="#acessorios" class="nav-link">Acessórios</a></li>
-                </ul>
+            <div class="navbar-content">
+                <a href="index.html">
+                    <img src="images/logo.png" alt="Stylus Concept" class="logo">
+                </a>
                 <div class="nav-icons">
-                    <div class="search-bar" id="searchBar">
-                        <input type="text" id="searchInput" class="search-input" placeholder="Buscar produtos..." aria-label="Buscar produtos">
-                        <button class="clear-search" id="clearSearch" title="Limpar busca">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <button class="icon-btn search-btn">
-                        <i class="fas fa-search"></i>
-                    </button>
                     <button class="icon-btn cart-btn" id="cartBtn">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count" id="cartCount">0</span>
                     </button>
                 </div>
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
             </div>
         </nav>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero loaded">
+    <section class="hero">
+        <div class="hero-overlay"></div>
         <div class="hero-content">
-            <p class="hero-brand">Stylus Concept — onde moda encontra identidade.</p>
-            <h2 class="hero-title">Viva a Nova Estação com Estilo!</h2>
-            <p class="hero-subtitle">Descubra peças exclusivas que traduzem sofisticação e contemporaneidade.</p>
-            <p class="hero-motto">Cores, modelos e detalhes que elevam sua presença em qualquer ocasião.</p>
+            <p class="hero-brand" data-aos="fade-down">Stylus Concept</p>
+            <h1 class="hero-title" data-aos="fade-up" data-aos-delay="200">
+                Viva a Nova Estação<br>com Estilo!
+            </h1>
+            <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">
+                Peças exclusivas que revelam sua essência e transformam seu estilo
+            </p>
+            <a href="catalogo.html" class="btn-catalog" data-aos="zoom-in" data-aos-delay="600">
+                <i class="fas fa-shopping-bag"></i> Acesse Nosso Catálogo
+            </a>
+        </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
         </div>
     </section>
 
+    <!-- Balão de Ajuda -->
+    <div class="help-tooltip" id="helpTooltip">
+        <div class="help-tooltip-content">
+            <div class="help-tooltip-header">
+                <h3><i class="fas fa-lightbulb"></i> Como usar o site</h3>
+                <button class="help-tooltip-close" id="helpTooltipClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="help-tooltip-body">
+                <div class="help-step">
+                    <div class="help-step-number">1</div>
+                    <div class="help-step-content">
+                        <h4><i class="fas fa-mouse-pointer"></i> Clique no produto</h4>
+                        <p>Clique em qualquer produto para ver os detalhes, cores e tamanhos disponíveis</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-number">2</div>
+                    <div class="help-step-content">
+                        <h4><i class="fas fa-shopping-cart"></i> Adicione ao carrinho</h4>
+                        <p>Escolha o tamanho e cor desejados, depois clique em "Adicionar ao Carrinho"</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-number">3</div>
+                    <div class="help-step-content">
+                        <h4><i class="fas fa-whatsapp"></i> Finalize sua compra</h4>
+                        <p>Ao fechar o carrinho, você será redirecionado para o WhatsApp para finalizar sua compra</p>
+                    </div>
+                </div>
+            </div>
+            <div class="help-tooltip-footer">
+                <button class="help-tooltip-dismiss" id="helpTooltipDismiss">
+                    <i class="fas fa-check"></i> Entendi!
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Seção Roupas -->
-    <section class="category-section" id="roupas">
+    <!-- Botão de Ajuda Flutuante -->
+    <div class="help-floating-btn" id="helpFloatingBtn">
+        <i class="fas fa-question-circle"></i>
+        <span class="help-floating-text">Como usar?</span>
+    </div>
+
+    <!-- Brands Section -->
+    <section class="brands">
         <div class="container">
-            <div class="section-header">
-                <div class="section-title-container">
-                    <h2 class="section-title">Roupas</h2>
-                    <p class="section-subtitle">Descubra nossa coleção completa de roupas elegantes e contemporâneas</p>
-                </div>
-                <div class="filter-dropdown-container">
-                    <button class="filter-toggle-btn" id="toggleRoupasFilters">
-                        <i class="fas fa-filter"></i>
-                        Filtros
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    
-                    <!-- Dropdown de Filtros para Roupas -->
-                    <div class="filters-dropdown hidden" id="roupasFilters">
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="marca">
-                        <i class="fas fa-tags"></i>
-                        Marca
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="marcaFilter">
-                        <label><input type="checkbox" value="nike"> Nike</label>
-                        <label><input type="checkbox" value="adidas"> Adidas</label>
-                        <label><input type="checkbox" value="puma"> Puma</label>
-                        <label><input type="checkbox" value="lacoste"> Lacoste</label>
-                        <label><input type="checkbox" value="tommy"> Tommy Hilfiger</label>
+            <h2 class="section-title" data-aos="fade-up">Conheça Nossas Marcas</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                As grifes que traduzem o estilo da Stylus Concept.<br>
+                Explore peças exclusivas que unem elegância, conforto e autenticidade.
+            </p>
+            
+            <!-- Jorge Bischoff - Feminina -->
+            <div class="brand-showcase" data-aos="fade-up" data-aos-delay="100">
+                <div class="brand-showcase-header">
+                    <div class="brand-info">
+                        <h3 class="brand-showcase-name">Jorge Bischoff</h3>
+                        <p class="brand-showcase-description">Sofisticação em couro premium • Feminino</p>
                     </div>
+                    <a href="catalogo.html?marca=jorge" class="btn-brand-more">
+                        Ver Mais <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="tamanho">
-                        <i class="fas fa-ruler"></i>
-                        Tamanho
-                        <i class="fas fa-chevron-down"></i>
+                <div class="brand-carousel-container">
+                    <button class="carousel-btn prev" data-brand="jorge">
+                        <i class="fas fa-chevron-left"></i>
                     </button>
-                    <div class="filter-options" id="tamanhoFilter">
-                        <label><input type="checkbox" value="P"> P</label>
-                        <label><input type="checkbox" value="M"> M</label>
-                        <label><input type="checkbox" value="G"> G</label>
-                        <label><input type="checkbox" value="GG"> GG</label>
-                        <label><input type="checkbox" value="XG"> XG</label>
+                    <div class="brand-carousel" id="carousel-jorge">
+                        <!-- Produtos serão carregados aqui via JavaScript -->
+                        <div class="carousel-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
                     </div>
-                </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="cor">
-                        <i class="fas fa-palette"></i>
-                        Cor
-                        <i class="fas fa-chevron-down"></i>
+                    <button class="carousel-btn next" data-brand="jorge">
+                        <i class="fas fa-chevron-right"></i>
                     </button>
-                    <div class="filter-options" id="corRoupasFilter">
-                        <!-- Opções de cor serão geradas dinamicamente -->
-                    </div>
-                </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="preco">
-                        <i class="fas fa-dollar-sign"></i>
-                        Preço
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="precoFilter">
-                        <label><input type="checkbox" value="0-50"> Até R$ 50</label>
-                        <label><input type="checkbox" value="50-100"> R$ 50 - R$ 100</label>
-                        <label><input type="checkbox" value="100-200"> R$ 100 - R$ 200</label>
-                        <label><input type="checkbox" value="200-500"> R$ 200 - R$ 500</label>
-                        <label><input type="checkbox" value="500+"> Acima de R$ 500</label>
-                    </div>
-                </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="tipo">
-                        <i class="fas fa-tshirt"></i>
-                        Tipo
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="tipoRoupasFilter">
-                        <label><input type="checkbox" value="blusas e camisas"> Blusas e Camisas</label>
-                        <label><input type="checkbox" value="vestidos"> Vestidos</label>
-                        <label><input type="checkbox" value="conjuntos"> Conjuntos</label>
-                        <label><input type="checkbox" value="shorts"> Shorts</label>
-                        <label><input type="checkbox" value="calças"> Calças</label>
-                        <label><input type="checkbox" value="camisa"> Camisa</label>
-                        <label><input type="checkbox" value="blusa"> Blusa</label>
-                        <label><input type="checkbox" value="bermuda"> Bermuda</label>
-                    </div>
-                </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="publico">
-                        <i class="fas fa-users"></i>
-                        Público
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="publicoRoupasFilter">
-                        <label><input type="checkbox" value="masculino"> Masculino</label>
-                        <label><input type="checkbox" value="feminino"> Feminino</label>
-                        <label><input type="checkbox" value="infantil"> Infantil</label>
-                    </div>
-                </div>
-                
-                
-                        <button class="clear-filters" id="clearRoupasFilters">
-                            <i class="fas fa-times"></i>
-                            Limpar Filtros
-                        </button>
-                    </div>
                 </div>
             </div>
-            
-            <div class="products-grid" id="roupasGrid">
-                <!-- Produtos de roupas serão inseridos aqui via JavaScript -->
+
+            <!-- Luiza Barcelos - Feminina -->
+            <div class="brand-showcase" data-aos="fade-up" data-aos-delay="200">
+                <div class="brand-showcase-header">
+                    <div class="brand-info">
+                        <h3 class="brand-showcase-name">Luiza Barcelos</h3>
+                        <p class="brand-showcase-description">Modernidade e conforto • Feminino</p>
+                    </div>
+                    <a href="catalogo.html?marca=luiza" class="btn-brand-more">
+                        Ver Mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="brand-carousel-container">
+                    <button class="carousel-btn prev" data-brand="luiza">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="brand-carousel" id="carousel-luiza">
+                        <div class="carousel-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" data-brand="luiza">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    </div>
+                </div>
+                
+            <!-- Mini Melissa - Infantil -->
+            <div class="brand-showcase" data-aos="fade-up" data-aos-delay="300">
+                <div class="brand-showcase-header">
+                    <div class="brand-info">
+                        <h3 class="brand-showcase-name">Mini Melissa</h3>
+                        <p class="brand-showcase-description">Charme e diversão para os pequenos • Infantil</p>
+                    </div>
+                    <a href="catalogo.html?marca=mini" class="btn-brand-more">
+                        Ver Mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="brand-carousel-container">
+                    <button class="carousel-btn prev" data-brand="melissa">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="brand-carousel" id="carousel-melissa">
+                        <div class="carousel-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" data-brand="melissa">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    </div>
+                </div>
+                
+            <!-- Klin - Infantil -->
+            <div class="brand-showcase" data-aos="fade-up" data-aos-delay="400">
+                <div class="brand-showcase-header">
+                    <div class="brand-info">
+                        <h3 class="brand-showcase-name">Klin</h3>
+                        <p class="brand-showcase-description">Qualidade e conforto para crianças • Infantil</p>
+                    </div>
+                    <a href="catalogo.html?marca=klin" class="btn-brand-more">
+                        Ver Mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="brand-carousel-container">
+                    <button class="carousel-btn prev" data-brand="klin">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="brand-carousel" id="carousel-klin">
+                        <div class="carousel-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" data-brand="klin">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    </div>
+                </div>
+                
+            <!-- Mizuno - Masculina -->
+            <div class="brand-showcase" data-aos="fade-up" data-aos-delay="500">
+                <div class="brand-showcase-header">
+                    <div class="brand-info">
+                        <h3 class="brand-showcase-name">Mizuno</h3>
+                        <p class="brand-showcase-description">Performance e estilo esportivo • Masculino</p>
+                    </div>
+                    <a href="catalogo.html?marca=mizuno" class="btn-brand-more">
+                        Ver Mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="brand-carousel-container">
+                    <button class="carousel-btn prev" data-brand="mizuno">
+                        <i class="fas fa-chevron-left"></i>
+                        </button>
+                    <div class="brand-carousel" id="carousel-mizuno">
+                        <div class="carousel-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" data-brand="mizuno">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Seção Calçados -->
-    <section class="category-section" id="calcados">
+    <!-- Trending Section -->
+    <section class="trending">
         <div class="container">
-            <div class="section-header">
-                <div class="section-title-container">
-                    <h2 class="section-title">Calçados</h2>
-                    <p class="section-subtitle">Calçados sofisticados que complementam perfeitamente seu estilo</p>
+            <h2 class="section-title" data-aos="fade-up">Tendências da Estação</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Descubra o que está em alta neste momento e renove seu guarda-roupa com estilo
+            </p>
+
+            <div class="trending-grid">
+                <a href="catalogo.html?categoria=roupas&tipo=vestidos" class="trending-card" data-aos="fade-up" data-aos-delay="50">
+                    <div class="trending-image">
+                        <img src="images/raoupas.jpg" alt="Roupas - Vestidos Fluídos">
+                        <span class="trending-badge">Novo</span>
                 </div>
-                <div class="filter-dropdown-container">
-                    <button class="filter-toggle-btn" id="toggleCalcadosFilters">
-                        <i class="fas fa-filter"></i>
-                        Filtros
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    
-                    <!-- Dropdown de Filtros para Calçados -->
-                    <div class="filters-dropdown hidden" id="calcadosFilters">
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="marca">
-                        <i class="fas fa-tags"></i>
-                        Marca
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="marcaCalcadosFilter">
-                        <label><input type="checkbox" value="nike"> Nike</label>
-                        <label><input type="checkbox" value="adidas"> Adidas</label>
-                        <label><input type="checkbox" value="puma"> Puma</label>
-                        <label><input type="checkbox" value="converse"> Converse</label>
-                        <label><input type="checkbox" value="vans"> Vans</label>
+                    <div class="trending-content">
+                        <h3>Vestidos Fluídos</h3>
+                        <p>Leveza e movimento para o verão</p>
+                        <div class="trending-link">
+                            Explorar <i class="fas fa-arrow-right"></i>
                     </div>
                 </div>
+                </a>
                 
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="tamanho">
-                        <i class="fas fa-ruler"></i>
-                        Tamanho
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="tamanhoCalcadosFilter">
-                        <label><input type="checkbox" value="35"> 35</label>
-                        <label><input type="checkbox" value="36"> 36</label>
-                        <label><input type="checkbox" value="37"> 37</label>
-                        <label><input type="checkbox" value="38"> 38</label>
-                        <label><input type="checkbox" value="39"> 39</label>
-                        <label><input type="checkbox" value="40"> 40</label>
-                        <label><input type="checkbox" value="41"> 41</label>
-                        <label><input type="checkbox" value="42"> 42</label>
-                        <label><input type="checkbox" value="43"> 43</label>
-                        <label><input type="checkbox" value="44"> 44</label>
+                <a href="catalogo.html?categoria=calcados&tipo=sandalia" class="trending-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="trending-image">
+                        <img src="images/calçados.jpg" alt="Calçados - Sandálias Elegantes">
+                        <span class="trending-badge hot">Em Alta</span>
                     </div>
+                    <div class="trending-content">
+                        <h3>Sandálias Elegantes</h3>
+                        <p>Conforto e sofisticação</p>
+                        <div class="trending-link">
+                            Explorar <i class="fas fa-arrow-right"></i>
                 </div>
+                    </div>
+                </a>
                 
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="cor">
-                        <i class="fas fa-palette"></i>
-                        Cor
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="corCalcadosFilter">
-                        <!-- Opções de cor serão geradas dinamicamente -->
+                <a href="catalogo.html?categoria=acessorios&tipo=bolsa" class="trending-card" data-aos="fade-up" data-aos-delay="150">
+                    <div class="trending-image">
+                        <img src="images/acessorios.jpg" alt="Acessórios - Bolsas de Couro">
+                        <span class="trending-badge bestseller">Mais Vendido</span>
+                    </div>
+                    <div class="trending-content">
+                        <h3>Bolsas de Couro</h3>
+                        <p>Investimento que nunca sai de moda</p>
+                        <div class="trending-link">
+                            Explorar <i class="fas fa-arrow-right"></i>
+                </div>
+                    </div>
+                </a>
                     </div>
                 </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="preco">
-                        <i class="fas fa-dollar-sign"></i>
-                        Preço
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="precoCalcadosFilter">
-                        <label><input type="checkbox" value="0-100"> Até R$ 100</label>
-                        <label><input type="checkbox" value="100-200"> R$ 100 - R$ 200</label>
-                        <label><input type="checkbox" value="200-300"> R$ 200 - R$ 300</label>
-                        <label><input type="checkbox" value="300-500"> R$ 300 - R$ 500</label>
-                        <label><input type="checkbox" value="500+"> Acima de R$ 500</label>
-                    </div>
-                </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="tipo">
-                        <i class="fas fa-shoe-prints"></i>
-                        Tipo
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="tipoCalcadosFilter">
-                        <label><input type="checkbox" value="tenis"> Tênis</label>
-                        <label><input type="checkbox" value="sapato"> Sapato</label>
-                        <label><input type="checkbox" value="sandalia"> Sandália</label>
-                        <label><input type="checkbox" value="bota"> Bota</label>
-                        <label><input type="checkbox" value="chinelo"> Chinelo</label>
-                    </div>
-                </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="publico">
-                        <i class="fas fa-users"></i>
-                        Público
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="publicoCalcadosFilter">
-                        <label><input type="checkbox" value="masculino"> Masculino</label>
-                        <label><input type="checkbox" value="feminino"> Feminino</label>
-                        <label><input type="checkbox" value="infantil"> Infantil</label>
-                    </div>
-                </div>
-                
-                        <button class="clear-filters" id="clearCalcadosFilters">
-                            <i class="fas fa-times"></i>
-                            Limpar Filtros
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="products-grid" id="calcadosGrid">
-                <!-- Produtos de calçados serão inseridos aqui via JavaScript -->
-            </div>
-        </div>
     </section>
 
-    <!-- Seção Acessórios -->
-    <section class="category-section" id="acessorios">
+    <!-- About Section -->
+    <section class="about">
         <div class="container">
-            <div class="section-header">
-                <div class="section-title-container">
-                    <h2 class="section-title">Acessórios</h2>
-                    <p class="section-subtitle">Acessórios únicos para completar seus looks com personalidade</p>
-                </div>
-                <div class="filter-dropdown-container">
-                    <button class="filter-toggle-btn" id="toggleAcessoriosFilters">
-                        <i class="fas fa-filter"></i>
-                        Filtros
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    
-                    <!-- Dropdown de Filtros para Acessórios -->
-                    <div class="filters-dropdown hidden" id="acessoriosFilters">
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="marca">
-                        <i class="fas fa-tags"></i>
-                        Marca
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="marcaAcessoriosFilter">
-                        <label><input type="checkbox" value="gucci"> Gucci</label>
-                        <label><input type="checkbox" value="louis"> Louis Vuitton</label>
-                        <label><input type="checkbox" value="chanel"> Chanel</label>
-                        <label><input type="checkbox" value="prada"> Prada</label>
-                        <label><input type="checkbox" value="versace"> Versace</label>
+            <div class="about-grid">
+                <div class="about-image" data-aos="fade-right">
+                    <img src="images/fundo1.jpg" alt="Stylus Concept">
+                    <div class="about-image-overlay">
+                        <i class="fas fa-heart"></i>
                     </div>
                 </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="tipo">
-                        <i class="fas fa-gem"></i>
-                        Tipo
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="tipoAcessoriosFilter">
-                        <label><input type="checkbox" value="bolsa"> Bolsa</label>
-                        <label><input type="checkbox" value="carteira"> Carteira</label>
-                        <label><input type="checkbox" value="relogio"> Relógio</label>
-                        <label><input type="checkbox" value="oculos"> Óculos</label>
-                        <label><input type="checkbox" value="joia"> Joias</label>
-                        <label><input type="checkbox" value="cinto"> Cinto</label>
+                <div class="about-content" data-aos="fade-left">
+                    <h2 class="section-title">Sobre a Stylus Concept</h2>
+                    <p>
+                        Na <strong>Stylus Concept</strong>, acreditamos que moda é expressão. 
+                        Cada peça é escolhida para traduzir autenticidade, conforto e elegância 
+                        — sempre com um toque contemporâneo.
+                    </p>
+                    <p>
+                        Mais do que uma loja, somos um espaço onde você encontra peças que 
+                        contam sua história, refletem sua personalidade e elevam sua presença 
+                        em cada ocasião.
+                    </p>
+
+                    <div class="about-features">
+                        <div class="feature-item">
+                            <i class="fas fa-gem"></i>
+                            <div>
+                                <h4>Qualidade Premium</h4>
+                                <p>Marcas selecionadas e peças exclusivas</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-heart"></i>
+                            <div>
+                                <h4>Atendimento Personalizado</h4>
+                                <p>Consultoria de estilo para você</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <h4>Coleções Exclusivas</h4>
+                                <p>Peças únicas que refletem tendências</p>
                     </div>
                 </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="cor">
-                        <i class="fas fa-palette"></i>
-                        Cor
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="corAcessoriosFilter">
-                        <!-- Opções de cor serão geradas dinamicamente -->
-                    </div>
-                </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="preco">
-                        <i class="fas fa-dollar-sign"></i>
-                        Preço
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="precoAcessoriosFilter">
-                        <label><input type="checkbox" value="0-100"> Até R$ 100</label>
-                        <label><input type="checkbox" value="100-300"> R$ 100 - R$ 300</label>
-                        <label><input type="checkbox" value="300-500"> R$ 300 - R$ 500</label>
-                        <label><input type="checkbox" value="500-1000"> R$ 500 - R$ 1.000</label>
-                        <label><input type="checkbox" value="1000+"> Acima de R$ 1.000</label>
-                    </div>
-                </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="material">
-                        <i class="fas fa-cube"></i>
-                        Material
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="materialAcessoriosFilter">
-                        <label><input type="checkbox" value="couro"> Couro</label>
-                        <label><input type="checkbox" value="metal"> Metal</label>
-                        <label><input type="checkbox" value="tecido"> Tecido</label>
-                        <label><input type="checkbox" value="plastico"> Plástico</label>
-                        <label><input type="checkbox" value="madeira"> Madeira</label>
-                    </div>
-                </div>
-                
-                <div class="filter-group">
-                    <button class="filter-toggle" data-filter="publico">
-                        <i class="fas fa-users"></i>
-                        Público
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="filter-options" id="publicoAcessoriosFilter">
-                        <label><input type="checkbox" value="masculino"> Masculino</label>
-                        <label><input type="checkbox" value="feminino"> Feminino</label>
-                        <label><input type="checkbox" value="infantil"> Infantil</label>
-                    </div>
-                </div>
-                
-                        <button class="clear-filters" id="clearAcessoriosFilters">
-                            <i class="fas fa-times"></i>
-                            Limpar Filtros
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="products-grid" id="acessoriosGrid">
-                <!-- Produtos de acessórios serão inseridos aqui via JavaScript -->
             </div>
         </div>
     </section>
 
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">O Que Dizem Nossas Clientes</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Experiências reais de quem confia na Stylus Concept
+            </p>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Adoro comprar aqui! Sempre encontro algo que combina comigo. 
+                        As peças são lindas e o atendimento é impecável."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h4>Maria Silva</h4>
+                            <p>Cliente há 2 anos</p>
+                </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Qualidade excepcional! Cada compra é um investimento certeiro. 
+                        Recomendo de olhos fechados!"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h4>Ana Costa</h4>
+                            <p>Cliente há 1 ano</p>
+                </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Peças maravilhosas e atendimento diferenciado. 
+                        A Stylus entende exatamente o que procuro!"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h4>Juliana Santos</h4>
+                            <p>Cliente há 3 anos</p>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter-content" data-aos="zoom-in">
+                <div class="newsletter-text">
+                    <h2>Siga a Stylus e Viva o Estilo Todos os Dias</h2>
+                    <p>Acompanhe nossas redes sociais e inspire-se com looks, novidades e muito mais</p>
+                </div>
+                <div class="social-links-large">
+                    <a href="https://www.instagram.com/stylusconcept?igsh=MTUzdHY5Mjg4MW90bg==" target="_blank" class="social-btn instagram">
+                        <i class="fab fa-instagram"></i>
+                        @stylusconcept
+                    </a>
+                    <a href="https://wa.me/5577988024793" target="_blank" class="social-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        (77) 98802-4793
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
 
     <!-- Footer -->
@@ -421,27 +453,30 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <img src="images/logo.png" alt="Stylus's Concept" class="footer-logo">
-                    <p class="footer-desc">Elegância e sofisticação em cada peça</p>
+                    <img src="images/logo.png" alt="Stylus Concept" class="footer-logo">
+                    <p class="footer-desc">Onde moda encontra identidade.<br>Elegância e sofisticação em cada peça.</p>
                     <div class="social-links">
-                        <a href="https://www.instagram.com/stylusconcept?igsh=MTUzdHY5Mjg4MW90bg==" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="https://wa.me/5577988024793" target="_blank" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://www.instagram.com/stylusconcept?igsh=MTUzdHY5Mjg4MW90bg==" target="_blank" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/5577988024793" target="_blank" class="social-link">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
                 </div>
 
                 <div class="footer-links">
                     <div class="footer-column">
-                        <h4 class="footer-title">Produtos</h4>
+                        <h4>Produtos</h4>
                         <ul class="footer-list">
-                            <li><a href="#roupas" class="footer-link">Roupas</a></li>
-                            <li><a href="#calcados" class="footer-link">Calçados</a></li>
-                            <li><a href="#acessorios" class="footer-link">Acessórios</a></li>
-                            
+                            <li><a href="catalogo.html#roupas" class="footer-link">Roupas</a></li>
+                            <li><a href="catalogo.html#calcados" class="footer-link">Calçados</a></li>
+                            <li><a href="catalogo.html#acessorios" class="footer-link">Acessórios</a></li>
                         </ul>
                     </div>
 
                     <div class="footer-column">
-                        <h4 class="footer-title">Suporte</h4>
+                        <h4>Suporte</h4>
                         <ul class="footer-list">
                             <li><a href="#" class="footer-link" data-modal="contatoModal">Contato</a></li>
                             <li><a href="#" class="footer-link" data-modal="trocasModal">Trocas e Devoluções</a></li>
@@ -450,7 +485,7 @@
                     </div>
 
                     <div class="footer-column">
-                        <h4 class="footer-title">Legal</h4>
+                        <h4>Legal</h4>
                         <ul class="footer-list">
                             <li><a href="#" class="footer-link" data-modal="privacidadeModal">Política de Privacidade</a></li>
                             <li><a href="#" class="footer-link" data-modal="termosModal">Termos de Uso</a></li>
@@ -462,6 +497,7 @@
 
             <div class="footer-bottom">
                 <p>&copy; 2025 Stylus Concept. Todos os direitos reservados.</p>
+                <p class="footer-love">Feito com <i class="fas fa-heart"></i> para você</p>
             </div>
         </div>
     </footer>
@@ -504,6 +540,9 @@
         </div>
     </div>
 
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Carregador de produtos por marca -->
     <!-- Modal de Contato -->
     <div class="support-modal" id="contatoModal">
         <div class="support-modal-content">
@@ -803,16 +842,14 @@
                             <li>WhatsApp: +55 (77) 98802-4793</li>
                         </ul>
                     </div>
-                    
-                    <div class="legal-section">
-                        <h4>7. Autoridade Nacional de Proteção de Dados (ANPD)</h4>
-                        <p>Você tem o direito de apresentar reclamações à ANPD caso considere que seus direitos foram violados.</p>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="brands-loader.js"></script>
+    <!-- Funcionalidades de carrinho -->
+    <script src="cart-handler.js"></script>
+    <script src="home-script.js"></script>
 </body>
 </html>

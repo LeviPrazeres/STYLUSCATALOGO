@@ -1,6 +1,7 @@
-// Preload da imagem de fundo
+// Preload da imagem de fundo (apenas se hero existir)
 document.addEventListener('DOMContentLoaded', function() {
     const hero = document.querySelector('.hero');
+    if (hero) {
     const img = new Image();
     
     img.onload = function() {
@@ -8,10 +9,91 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     img.src = 'images/fundo1.jpg';
+    }
 });
 
 // Dados dos produtos (vazios, preenchidos via Google Sheets)
 const products = [];
+
+// Cache de produtos para evitar recarregamento
+let productsCache = null;
+let isLoadingProducts = false;
+
+// Função otimizada para carregar produtos com filtros pré-aplicados
+async function loadProductsWithPreFilter(urlParams = null) {
+    // Se já está carregando, aguardar
+    if (isLoadingProducts) {
+        return new Promise((resolve) => {
+            const checkLoading = () => {
+                if (!isLoadingProducts) {
+                    resolve();
+                } else {
+                    setTimeout(checkLoading, 100);
+                }
+            };
+            checkLoading();
+        });
+    }
+    
+    // Se já temos cache e não há filtros específicos, usar cache
+    if (productsCache && !urlParams) {
+        console.log(`⚡ Usando cache de produtos (${productsCache.length} produtos)`);
+        return productsCache;
+    }
+    
+    isLoadingProducts = true;
+    console.log(`🚀 Carregando produtos da planilha...`);
+    
+    try {
+        const data = await fetchGviz();
+        const rows = data.table.rows;
+        const allProducts = rowsToObjects(rows);
+        
+        // Armazenar no cache
+        productsCache = allProducts;
+        
+        // Se há filtros da URL, aplicar durante o carregamento
+        if (urlParams) {
+            const categoria = urlParams.get('categoria');
+            const tipo = urlParams.get('tipo');
+            const marca = urlParams.get('marca');
+            
+            console.log(`🎯 Aplicando filtros durante carregamento: categoria=${categoria}, tipo=${tipo}, marca=${marca}`);
+            
+            // Filtrar produtos durante o carregamento
+            let filteredProducts = allProducts;
+            
+            if (categoria) {
+                filteredProducts = filteredProducts.filter(p => 
+                    p.category === categoria || 
+                    (categoria === 'roupas' && ['roupas', 'elegante', 'casual'].includes(p.category))
+                );
+            }
+            
+            if (tipo) {
+                filteredProducts = filteredProducts.filter(p => 
+                    p.type && normalizeTextBasic(p.type).includes(normalizeTextBasic(tipo))
+                );
+            }
+            
+            if (marca) {
+                filteredProducts = filteredProducts.filter(p => 
+                    p.brand && normalizeTextBasic(p.brand).includes(normalizeTextBasic(marca))
+                );
+            }
+            
+            console.log(`✅ Produtos filtrados durante carregamento: ${filteredProducts.length} de ${allProducts.length}`);
+        }
+        
+        isLoadingProducts = false;
+        return allProducts;
+        
+    } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
+        isLoadingProducts = false;
+        return [];
+    }
+}
 
 // Produtos de Calçados (vazios, preenchidos via Google Sheets)
 const calcadosProducts = [];
@@ -33,13 +115,65 @@ const cartTotal = document.getElementById('cartTotal');
 const checkoutBtn = document.getElementById('checkoutBtn');
 const productsGrid = document.getElementById('productsGrid');
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', function() {
-    initializeCatalogFromSheets();
+// Inicialização otimizada
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log(`🚀 Catálogo carregado - aplicando filtros da URL...`);
+    
+    // Mostrar loading spinner
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    if (loadingSpinner) {
+        loadingSpinner.classList.remove('hidden');
+    }
+    
+    // Verificar se há filtros na URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasFilters = urlParams.get('categoria') || urlParams.get('tipo') || urlParams.get('marca');
+    
+    try {
+        // Carregar produtos com filtros pré-aplicados se necessário
+        if (hasFilters) {
+            await loadProductsWithPreFilter(urlParams);
+        } else {
+            await loadProductsWithPreFilter();
+        }
+        
+        // Inicializar catálogo
+        await initializeCatalogFromSheets();
+        
+        // Aplicar filtros da URL (se houver) e aguardar conclusão
+        if (hasFilters) {
+            console.log(`🎯 Aplicando filtros finais...`);
+            await applyFiltersFromURLWithDelay();
+            
+            // Aguardar mais um pouco para garantir que a renderização foi concluída
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+        
+        // Atualizar UI
     updateCartUI();
     setupEventListeners();
     setupSupportModals();
-    // setupFilters será chamado após carregar os dados da planilha
+    setupHelpTooltip();
+        
+        // Aguardar um pouco mais para garantir que tudo foi renderizado
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Verificar se há produtos renderizados antes de ocultar o spinner
+        const hasRenderedProducts = checkIfProductsAreRendered();
+        if (!hasRenderedProducts) {
+            console.log(`⏳ Aguardando produtos serem renderizados...`);
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
+    } catch (error) {
+        console.error('Erro na inicialização:', error);
+    } finally {
+        // Ocultar loading spinner apenas quando tudo estiver pronto
+        if (loadingSpinner) {
+            console.log(`✅ Carregamento concluído - ocultando spinner`);
+            loadingSpinner.classList.add('hidden');
+        }
+    }
 });
 
 // Event Listeners
@@ -47,6 +181,32 @@ function setupEventListeners() {
     cartBtn.addEventListener('click', toggleCartModal);
     closeCart.addEventListener('click', toggleCartModal);
     checkoutBtn.addEventListener('click', handleCheckout);
+    
+    // Botão "Ver Todas" - mostrar todas as seções
+    const clearAllBtn = document.getElementById('clearAllFilters');
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', function() {
+            console.log(`🔄 Limpando todos os filtros e mostrando todas as seções`);
+            
+            // Mostrar todas as seções
+            const allCategories = ['roupas', 'calcados', 'acessorios'];
+            allCategories.forEach(category => {
+                const section = document.getElementById(category);
+                if (section) {
+                    section.style.display = 'block';
+                }
+                
+                // Limpar filtros de cada categoria
+                clearFilters(category);
+            });
+            
+            // Limpar URL (remover parâmetros)
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Scroll para o topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
     
     // Busca
     const searchBtn = document.querySelector('.search-btn');
@@ -499,32 +659,14 @@ function mapRowToProduct(row, index) {
         }
     }
     
-    // Debug: mostrar se encontrou preço em alguma coluna
-    if (name.includes('Sandália de tiras ultrafinas')) {
-        console.log(`🔍 PREÇO ENCONTRADO para ${name}:`, precoPlanilha);
-    }
     let price = 0; // Preço padrão
     let pricesByColor = {}; // Preços por cor
     
-    // Debug: sempre mostrar o valor da planilha para produtos específicos
-    if (name.includes('Sandália de tiras ultrafinas')) {
-        console.log(`🔍 DEBUG PREÇO para ${name}:`, {
-            precoPlanilha: precoPlanilha,
-            tipo: typeof precoPlanilha,
-            vazio: precoPlanilha === '',
-            trimVazio: String(precoPlanilha).trim() === '',
-            rowKeys: Object.keys(row),
-            rowValues: row
-        });
-    }
-    
     if (precoPlanilha && String(precoPlanilha).trim() !== '') {
-        console.log(`🔍 Valor original da planilha para ${name}:`, precoPlanilha);
         // Verificar se está no formato "Cor=preço. Cor=preço"
         if (String(precoPlanilha).includes('=')) {
             // Processar formato "Cor=preço. Cor=preço"
             const colorPricePairs = String(precoPlanilha).split('.').filter(Boolean);
-            console.log(`🔍 Pares extraídos:`, colorPricePairs);
             
             colorPricePairs.forEach(pair => {
                 const trimmedPair = pair.trim();
@@ -533,13 +675,6 @@ function mapRowToProduct(row, index) {
                     if (color && priceStr) {
                         const colorName = color.trim();
                         const priceValue = parseNumberBR(priceStr.trim());
-                        console.log(`🔍 Processando: "${colorName}" = "${priceStr.trim()}" -> ${priceValue}`);
-                        console.log(`🔍 Debug parseNumberBR:`, {
-                            input: priceStr.trim(),
-                            hasComma: priceStr.trim().includes(','),
-                            hasDot: priceStr.trim().includes('.'),
-                            result: priceValue
-                        });
                         if (priceValue !== null) {
                             pricesByColor[colorName] = priceValue;
                         }
@@ -560,9 +695,6 @@ function mapRowToProduct(row, index) {
                 // O range será exibido na interface
                 price = minPrice;
             }
-            
-            console.log(`💰 Preços por cor processados para ${name}:`, pricesByColor);
-            console.log(`💰 Range de preços: R$ ${minPrice.toFixed(2)} - R$ ${maxPrice.toFixed(2)}`);
         } else {
             // Formato antigo: preço fixo
             price = parseNumberBR(precoPlanilha) ?? 0;
@@ -642,8 +774,6 @@ function mapRowToProduct(row, index) {
         });
         // console.log(`🎨 Cores processadas:`, colors);
     } else {
-        console.log(`⚠️ Nenhuma cor encontrada na planilha para ${name}`);
-        console.log(`⚠️ Tentativas de busca: cor=${row.cor}, col_11=${row.col_11}, cor_produto=${row.cor_produto}, color=${row.color}, colors=${row.colors}`);
         // Se não há cores na planilha, usar array vazio em vez de cores padrão
         colors = [];
     }
@@ -691,15 +821,10 @@ function mapRowToProduct(row, index) {
     const type = row.tipo_produto || null; // coluna E = tipo (só se existir)
     const brand = row.marca || null; // coluna E = marca (só se existir)
     
-    // Debug: verificar se o público está sendo lido corretamente
-    if (row.categoria) {
-        console.log(`Produto ${name} - Categoria da planilha (coluna B): ${row.categoria}`);
-    }
-    
-    // Debug: verificar se a marca está sendo lida corretamente
-    if (row.marca) {
-        console.log(`Produto ${name} - Marca da planilha (coluna E): ${row.marca}`);
-    }
+    // Coluna G (chamada "tamanho" na planilha) = tamanho do produto para ordenação
+    // Para acessórios: pequeno, médio, grande
+    // IMPORTANTE: Salvar ANTES de usar row.tamanho para outras coisas
+    const productSize = row.tamanho || null;
 
     // Calcular range de preços se houver preços por cor
     let priceRange = null;
@@ -710,7 +835,286 @@ function mapRowToProduct(row, index) {
         priceRange = { min: minPrice, max: maxPrice };
     }
     
-    return { id, name, price, oldPrice, image, badge, category, sizes, sizesByColor, colors, description, gallery, videoIndices, publico, material, type, brand, pricesByColor, priceRange };
+    return { id, name, price, oldPrice, image, badge, category, sizes, sizesByColor, colors, description, gallery, videoIndices, publico, material, type, brand, pricesByColor, priceRange, productSize };
+}
+
+
+// Função para ordenar produtos por cor (do mais claro ao mais escuro)
+function sortProductsByColor(products) {
+    if (!products || products.length === 0) return [];
+    
+    // Ordem das cores do mais claro ao mais escuro
+    const colorOrder = {
+        'branco': 1,
+        'bege': 2,
+        'creme': 3,
+        'amarelo': 4,
+        'laranja': 5,
+        'rosa': 6,
+        'vermelho': 7,
+        'caramelo': 8,
+        'dourado': 9,
+        'azul': 10,
+        'verde': 11,
+        'marrom': 12,
+        'cinza': 13,
+        'preto': 14,
+        'outros': 999
+    };
+    
+    return [...products].sort((a, b) => {
+        // Pegar a primeira cor de cada produto
+        const colorA = getFirstColor(a.colors || a.color || 'outros');
+        const colorB = getFirstColor(b.colors || b.color || 'outros');
+        
+        const orderA = colorOrder[colorA] || 999;
+        const orderB = colorOrder[colorB] || 999;
+        
+        if (orderA !== orderB) {
+            return orderA - orderB;
+        }
+        
+        // Se têm a mesma cor, manter ordem original
+        return 0;
+    });
+}
+
+// Função para extrair a primeira cor de uma string de cores
+function getFirstColor(colorString) {
+    if (!colorString) return 'outros';
+    
+    // Se é um array de objetos com name/value
+    if (Array.isArray(colorString)) {
+        if (colorString.length > 0) {
+            const firstColor = colorString[0];
+            if (typeof firstColor === 'object' && firstColor.name) {
+                return normalizeColorName(firstColor.name);
+            } else if (typeof firstColor === 'string') {
+                return normalizeColorName(firstColor);
+            }
+        }
+        return 'outros';
+    }
+    
+    // Se é uma string, dividir por vírgulas ou ponto e vírgula
+    if (typeof colorString === 'string') {
+        const colors = colorString.toLowerCase().split(/[,;]/).map(c => c.trim());
+        const firstColor = colors[0] || 'outros';
+        return normalizeColorName(firstColor);
+    }
+    
+    return 'outros';
+}
+
+// Função para normalizar nomes de cores
+function normalizeColorName(colorName) {
+    if (!colorName) return 'outros';
+    
+    const color = colorName.toLowerCase().trim();
+    
+    // Normalizar variações de nomes de cores (do mais claro ao mais escuro)
+    
+    // BRANCO e tons muito claros
+    if (color.includes('branco') || color.includes('white') || 
+        color.includes('off-white') || color.includes('offwhite') ||
+        color.includes('off white') || color.includes('gelo') ||
+        color.includes('linho')) return 'branco';
+    
+    // BEGE e tons nude/areia
+    if (color.includes('bege') || color.includes('beige') || 
+        color.includes('nude') || color.includes('areia') ||
+        color.includes('arenito') || color.includes('sand') ||
+        color.includes('champagne') || color.includes('champanhe')) return 'bege';
+    
+    // CREME e tons claros quentes
+    if (color.includes('creme') || color.includes('cream') ||
+        color.includes('marfim') || color.includes('ivory') ||
+        color.includes('cappuccino') || color.includes('cappucino')) return 'creme';
+    
+    // AMARELO e tons amarelados
+    if (color.includes('amarelo') || color.includes('yellow') ||
+        color.includes('melancia') || color.includes('limão')) return 'amarelo';
+    
+    // LARANJA e tons terrosos claros
+    if (color.includes('laranja') || color.includes('orange') ||
+        color.includes('coral') || color.includes('damasco')) return 'laranja';
+    
+    // ROSA e tons rosados (incluindo variações)
+    if (color.includes('rosa') || color.includes('pink') ||
+        color.includes('salmão') || color.includes('salmon') ||
+        color.includes('salmao') || color.includes('rosa claro') ||
+        color.includes('rosa-claro') || color.includes('rosé')) return 'rosa';
+    
+    // VERMELHO e tons avermelhados
+    if (color.includes('vermelho') || color.includes('red') ||
+        color.includes('vinho') || color.includes('bordô') ||
+        color.includes('bordo') || color.includes('burgundy') ||
+        color.includes('rubi') || color.includes('cereja')) return 'vermelho';
+    
+    // CARAMELO e tons médios quentes
+    if (color.includes('caramelo') || color.includes('caramel') ||
+        color.includes('caramello') || color.includes('mel') ||
+        color.includes('honey') || color.includes('cognac') ||
+        color.includes('whisky') || color.includes('whiskey')) return 'caramelo';
+    
+    // DOURADO e tons metálicos claros
+    if (color.includes('dourado') || color.includes('dourada') || 
+        color.includes('gold') || color.includes('ouro')) return 'dourado';
+    
+    // AZUL e tons azulados
+    if (color.includes('azul') || color.includes('blue') ||
+        color.includes('marinho') || color.includes('navy') ||
+        color.includes('royal') || color.includes('turquesa')) return 'azul';
+    
+    // VERDE e tons esverdeados
+    if (color.includes('verde') || color.includes('green') ||
+        color.includes('militar') || color.includes('oliva') ||
+        color.includes('musgo') || color.includes('limão')) return 'verde';
+    
+    // MARROM e tons castanhos
+    if (color.includes('marrom') || color.includes('brown') ||
+        color.includes('castanho') || color.includes('chocolate') ||
+        color.includes('café') || color.includes('coffee') ||
+        color.includes('tabaco') || color.includes('tan') ||
+        color.includes('terra') || color.includes('camel')) return 'marrom';
+    
+    // CINZA e tons acinzentados (incluindo variações)
+    if (color.includes('cinza') || color.includes('gray') || 
+        color.includes('grey') || color.includes('grafite') ||
+        color.includes('graphite') || color.includes('chumbo') ||
+        color.includes('prata') || color.includes('silver') ||
+        color.includes('cinza escuro') || color.includes('cinza-escuro') ||
+        color.includes('cinza claro') || color.includes('cinza-claro') ||
+        color.includes('mescla') || color.includes('carvão') ||
+        color.includes('carvao')) return 'cinza';
+    
+    // PRETO e tons muito escuros
+    if (color.includes('preto') || color.includes('preta') || 
+        color.includes('black') || color.includes('negro') ||
+        color.includes('ônix') || color.includes('onix') ||
+        color.includes('preto total') || color.includes('all black')) return 'preto';
+    
+    return 'outros';
+}
+
+// Função para agrupar produtos por tipo
+function groupProductsByType(products) {
+    if (!products || products.length === 0) return [];
+    
+    // Criar grupos por tipo
+    const groups = {};
+    
+    products.forEach(product => {
+        const type = product.type || 'outros';
+        if (!groups[type]) {
+            groups[type] = [];
+        }
+        groups[type].push(product);
+    });
+    
+    // Ordenar os grupos por ordem de prioridade (alfabética)
+    const sortedGroups = Object.keys(groups).sort();
+    
+    // Concatenar todos os grupos em ordem
+    const groupedProducts = [];
+    sortedGroups.forEach(type => {
+        groupedProducts.push(...groups[type]);
+    });
+    
+    console.log(`📦 Produtos agrupados por tipo:`, Object.keys(groups).map(type => `${type}: ${groups[type].length}`).join(', '));
+    
+    return groupedProducts;
+}
+
+// Função para agrupar produtos por tipo com ordem personalizada
+function groupProductsByTypeWithCustomOrder(products, category) {
+    if (!products || products.length === 0) return [];
+    
+    // Ordem personalizada por categoria
+    const customOrder = {
+        'calcados': ['bota', 'sandália', 'sandalia', 'sapato', 'tênis', 'tenis', 'chinelo', 'outros'],
+        'roupas': ['vestido', 'blusa', 'camisa', 'calça', 'calca', 'short', 'saia', 'outros'],
+        'acessorios': ['bolsa', 'mochila', 'carteira', 'cinto', 'outros']
+    };
+    
+    // Criar grupos por tipo
+    const groups = {};
+    
+    products.forEach(product => {
+        const type = (product.type || 'outros').toLowerCase().trim();
+        let groupKey = type;
+        
+        // Normalizar variações de nomes
+        if (type.includes('sandália') || type.includes('sandalia')) {
+            groupKey = 'sandália';
+        } else if (type.includes('tênis') || type.includes('tenis')) {
+            groupKey = 'tênis';
+        } else if (type.includes('calça') || type.includes('calca')) {
+            groupKey = 'calça';
+        }
+        
+        if (!groups[groupKey]) {
+            groups[groupKey] = [];
+        }
+        groups[groupKey].push(product);
+    });
+    
+    // Ordenar os grupos pela ordem personalizada
+    const order = customOrder[category] || Object.keys(groups).sort();
+    const groupedProducts = [];
+    
+    // Adicionar grupos na ordem personalizada
+    order.forEach(type => {
+        if (groups[type]) {
+            // Para todas as categorias, ordenar por cor dentro de cada tipo
+            const sortedByColor = sortProductsByColor(groups[type]);
+            groupedProducts.push(...sortedByColor);
+        }
+    });
+    
+    // Adicionar tipos que não estão na ordem personalizada
+    Object.keys(groups).forEach(type => {
+        if (!order.includes(type)) {
+            // Para todas as categorias, ordenar por cor dentro de cada tipo
+            const sortedByColor = sortProductsByColor(groups[type]);
+            groupedProducts.push(...sortedByColor);
+        }
+    });
+    
+    console.log(`📦 Produtos agrupados por tipo (${category}):`, Object.keys(groups).map(type => `${type}: ${groups[type].length}`).join(', '));
+    
+    // Log detalhado da ordenação por cor para cada tipo
+    Object.keys(groups).forEach(type => {
+        const typeProducts = groups[type];
+        if (typeProducts.length > 1) {
+            const colorOrderDisplay = typeProducts.map(p => {
+                const normalizedColor = getFirstColor(p.colors || p.color || 'outros');
+                const originalColor = Array.isArray(p.colors) && p.colors.length > 0 
+                    ? (typeof p.colors[0] === 'object' ? p.colors[0].name : p.colors[0])
+                    : (p.color || 'N/A');
+                
+                // Destacar cores não reconhecidas
+                if (normalizedColor === 'outros') {
+                    return `⚠️ ${originalColor}→${normalizedColor}`;
+                }
+                return `${originalColor}→${normalizedColor}`;
+            });
+            console.log(`🎨 ${type} ordenado por cor:`, colorOrderDisplay.join(' | '));
+            
+            // Listar cores não reconhecidas
+            const unrecognizedColors = typeProducts
+                .filter(p => getFirstColor(p.colors || p.color || 'outros') === 'outros')
+                .map(p => Array.isArray(p.colors) && p.colors.length > 0 
+                    ? (typeof p.colors[0] === 'object' ? p.colors[0].name : p.colors[0])
+                    : (p.color || 'N/A'));
+            
+            if (unrecognizedColors.length > 0) {
+                console.warn(`⚠️ ${type} - Cores não reconhecidas:`, [...new Set(unrecognizedColors)]);
+            }
+        }
+    });
+    
+    return groupedProducts;
 }
 
 // Função para formatar preços com pontos para milhares
@@ -764,6 +1168,12 @@ async function loadAllProductsFromSheets() {
             console.error(`❌ Erro ao processar linha ${index + 1}:`, error, row);
         }
     });
+    
+    console.log(`✅ Produtos carregados da planilha:`, {
+        roupas: result.roupas.length,
+        calcados: result.calcados.length,
+        acessorios: result.acessorios.length
+    });
 
     return result;
 }
@@ -772,15 +1182,18 @@ async function initializeCatalogFromSheets() {
     try {
         // Se o ID não foi configurado, mantém os dados locais
         if (!SHEET_CONFIG.spreadsheetId || SHEET_CONFIG.spreadsheetId.startsWith('COLOQUE_')) {
+            console.log(`⚠️ ID da planilha não configurado, usando dados locais`);
             renderCategoryProducts();
             return;
         }
         
+        // Se já temos cache, usar cache
+        if (productsCache && productsCache.length > 0) {
+            console.log(`⚡ Usando cache para inicialização (${productsCache.length} produtos)`);
         const data = await loadAllProductsFromSheets();
 
         // Substitui os arrays locais se veio algo da planilha;
         if (Array.isArray(data.roupas) && data.roupas.length) {
-            // sobrescreve mantendo a referência usada no código
             products.length = 0; data.roupas.forEach(p => products.push(p));
         }
         if (Array.isArray(data.calcados) && data.calcados.length) {
@@ -789,20 +1202,27 @@ async function initializeCatalogFromSheets() {
         if (Array.isArray(data.acessorios) && data.acessorios.length) {
             acessoriosProducts.length = 0; data.acessorios.forEach(p => acessoriosProducts.push(p));
         }
+        } else {
+            console.log(`🚀 Carregando produtos da planilha...`);
+            const data = await loadAllProductsFromSheets();
 
-        console.log('[Sheets] Carregado:', {
-            roupas: products.length,
-            calcados: calcadosProducts.length,
-            acessorios: acessoriosProducts.length
-        });
+            // Substitui os arrays locais se veio algo da planilha;
+            if (Array.isArray(data.roupas) && data.roupas.length) {
+                products.length = 0; data.roupas.forEach(p => products.push(p));
+            }
+            if (Array.isArray(data.calcados) && data.calcados.length) {
+                calcadosProducts.length = 0; data.calcados.forEach(p => calcadosProducts.push(p));
+            }
+            if (Array.isArray(data.acessorios) && data.acessorios.length) {
+                acessoriosProducts.length = 0; data.acessorios.forEach(p => acessoriosProducts.push(p));
+            }
+        }
 
         renderCategoryProducts();
         generateDynamicFilters(); // Gerar filtros baseados nos dados da planilha
         setTimeout(setupScrollAnimations, 300);
     } catch (err) {
         console.error('❌ Falha ao carregar dados do Google Sheets:', err);
-        console.error('❌ Stack trace:', err.stack);
-        console.log('🔄 Usando fallback para dados locais...');
         // Fallback para os dados locais
         renderCategoryProducts();
         generateDynamicFilters(); // Gerar filtros mesmo com dados locais
@@ -826,12 +1246,6 @@ function reorganizeGallery(gallery, videoIndices = []) {
     
     // A galeria já vem organizada: fotos primeiro, vídeos por último
     // Não precisa reorganizar, apenas retornar como está
-    console.log('📸 Galeria já organizada:', {
-        total: gallery.length,
-        videos: videoIndices.length,
-        fotos: gallery.length - videoIndices.length
-    });
-    
     return gallery;
 }
 
@@ -860,26 +1274,19 @@ function extractGoogleDriveId(url) {
 function convertThumbnailToVideo(thumbnailUrl) {
     if (!thumbnailUrl || typeof thumbnailUrl !== 'string') return thumbnailUrl;
     
-    console.log('🎬 Convertendo URL para vídeo:', thumbnailUrl);
-    
     // Se já é um link de vídeo direto, retornar como está
     if (thumbnailUrl.includes('/file/d/') && (thumbnailUrl.includes('/view') || thumbnailUrl.includes('/preview'))) {
-        console.log('✅ URL já é de vídeo direto');
         return thumbnailUrl;
     }
     
     // Extrair ID do arquivo
         const fileId = extractGoogleDriveId(thumbnailUrl);
         if (fileId) {
-        console.log('🔍 ID extraído:', fileId);
-        
         // Gerar URL de vídeo do Google Drive - usar preview para reprodução
         const videoUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-        console.log('🎥 URL de vídeo gerada:', videoUrl);
         return videoUrl;
     }
     
-    console.log('⚠️ Não foi possível converter para vídeo');
     return thumbnailUrl;
 }
 
@@ -1261,6 +1668,7 @@ function createProductCard(product) {
         </div>
         <div class="product-content">
             <h3 class="product-title" onclick="openProductModal(${product.id})" style="cursor: pointer;">${product.name}</h3>
+            ${product.brand ? `<p class="product-brand"><i class="fas fa-tag"></i> ${product.brand}</p>` : ''}
             ${product.description ? `<p class="product-description"><strong>Descrição do produto:</strong> ${truncateDescription(product.description)}</p>` : ''}
             <div class="product-price">
                 ${product.priceRange ? 
@@ -1712,6 +2120,26 @@ window.testWhatsAppLink = testWhatsAppLink;
 
 // Renderizar produtos por categoria
 function renderCategoryProducts() {
+    // Verificar se há filtros na URL para renderização otimizada
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoria = urlParams.get('categoria');
+    const tipo = urlParams.get('tipo');
+    const marca = urlParams.get('marca');
+    
+    const hasFilters = categoria || tipo || marca;
+    
+    if (hasFilters) {
+        console.log(`⚡ Renderização otimizada com filtros: categoria=${categoria}, tipo=${tipo}, marca=${marca}`);
+        
+        // Renderizar apenas a categoria filtrada
+        if (categoria) {
+            renderSingleCategory(categoria, true);
+            return;
+        }
+    }
+    
+    console.log(`⚡ Renderização normal (todas as categorias)`);
+    
     const roupasGrid = document.getElementById('roupasGrid');
     const calcadosGrid = document.getElementById('calcadosGrid');
     const acessoriosGrid = document.getElementById('acessoriosGrid');
@@ -1725,12 +2153,13 @@ function renderCategoryProducts() {
     let roupasCount = 0;
     if (roupasGrid) {
         roupasGrid.innerHTML = '';
-        products.forEach(product => {
-            if (product.category === 'roupas' || product.category === 'elegante' || product.category === 'casual') {
+        const roupasProducts = products.filter(p => p.category === 'roupas' || p.category === 'elegante' || p.category === 'casual');
+        const groupedRoupas = groupProductsByTypeWithCustomOrder(roupasProducts, 'roupas');
+        
+        groupedRoupas.forEach(product => {
                 const productCard = createProductCard(product);
                 roupasGrid.appendChild(productCard);
                 roupasCount++;
-            }
         });
     }
     
@@ -1738,18 +2167,26 @@ function renderCategoryProducts() {
     let calcadosCount = 0;
     if (calcadosGrid) {
         calcadosGrid.innerHTML = '';
-        calcadosProducts.forEach(product => {
+        const groupedCalcados = groupProductsByTypeWithCustomOrder(calcadosProducts, 'calcados');
+        
+        groupedCalcados.forEach(product => {
             const productCard = createProductCard(product);
             calcadosGrid.appendChild(productCard);
             calcadosCount++;
         });
+        
+        // Processar imagens verticais de calçados após carregamento
+        setTimeout(() => processShoesImages(), 200);
     }
     
     // Renderizar acessórios
     let acessoriosCount = 0;
     if (acessoriosGrid) {
         acessoriosGrid.innerHTML = '';
-        acessoriosProducts.forEach(product => {
+        // Agrupar por tipo e ordenar por cor dentro de cada tipo
+        const groupedAcessorios = groupProductsByTypeWithCustomOrder(acessoriosProducts, 'acessorios');
+        
+        groupedAcessorios.forEach(product => {
             const productCard = createProductCard(product);
             acessoriosGrid.appendChild(productCard);
             acessoriosCount++;
@@ -1768,6 +2205,84 @@ function renderCategoryProducts() {
     }
 }
 
+// Função para renderizar apenas uma categoria (otimizada)
+function renderSingleCategory(category, hideOthers = false) {
+    console.log(`🎯 Renderizando categoria: ${category}`);
+    
+    // Ocultar outras seções PRIMEIRO para evitar flash
+    if (hideOthers) {
+        const allCategories = ['roupas', 'calcados', 'acessorios'];
+        allCategories.forEach(cat => {
+            if (cat !== category) {
+                const section = document.getElementById(cat);
+                if (section) {
+                    section.style.display = 'none';
+                }
+            }
+        });
+    }
+    
+    // Renderizar apenas a categoria especificada
+    const section = document.getElementById(category);
+    if (section) {
+        section.style.display = 'block';
+        
+        let productsToRender = [];
+        let grid = null;
+        
+        if (category === 'roupas') {
+            productsToRender = products.filter(p => p.category === 'roupas' || p.category === 'elegante' || p.category === 'casual');
+            grid = document.getElementById('roupasGrid');
+        } else if (category === 'calcados') {
+            productsToRender = calcadosProducts;
+            grid = document.getElementById('calcadosGrid');
+        } else if (category === 'acessorios') {
+            productsToRender = acessoriosProducts;
+            grid = document.getElementById('acessoriosGrid');
+        }
+        
+        if (grid) {
+            // Limpar grid ANTES de renderizar
+            grid.innerHTML = '';
+            
+            // Verificar se há produtos nesta categoria
+            if (productsToRender.length === 0) {
+                // Mostrar mensagem de categoria vazia
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'no-products-message';
+                emptyMessage.innerHTML = `
+                    <div class="no-products-content">
+                        <i class="fas fa-box-open"></i>
+                        <h3>Produtos em breve!</h3>
+                        <p>Esta seção não tem produtos disponíveis ainda, mas aguarde novidades em breve! Estamos trabalhando para trazer os melhores produtos para você.</p>
+                        <p style="margin-top: 12px;">Fique à vontade para navegar por outras seções.</p>
+                        <div style="margin-top: 30px; display: flex; justify-content: center;">
+                            <a href="index.html" class="btn-back-home-styled">
+                                <i class="fas fa-home"></i>
+                                Voltar para Home
+                            </a>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(emptyMessage);
+                grid.classList.add('empty-grid');
+                console.log(`⚠️ Nenhum produto cadastrado para ${category}`);
+            } else {
+                // Agrupar produtos por tipo para todas as categorias
+                productsToRender = groupProductsByTypeWithCustomOrder(productsToRender, category);
+                
+                // Renderizar produtos de forma síncrona
+                productsToRender.forEach(product => {
+                    const productCard = createProductCard(product);
+                    grid.appendChild(productCard);
+                });
+                
+                console.log(`✅ Renderizados ${productsToRender.length} produtos para ${category}`);
+            }
+        }
+    }
+}
+
 // Busca
 function handleSearch(query) {
     const q = normalizeTextBasic(query);
@@ -1781,6 +2296,11 @@ function handleSearch(query) {
         calcados: calcadosProducts.filter(filterFn),
         acessorios: acessoriosProducts.filter(filterFn)
     };
+    
+    // 🎯 AGRUPAR PRODUTOS POR TIPO na busca
+    filtered.roupas = groupProductsByTypeWithCustomOrder(filtered.roupas, 'roupas');
+    filtered.calcados = groupProductsByTypeWithCustomOrder(filtered.calcados, 'calcados');
+    filtered.acessorios = groupProductsByTypeWithCustomOrder(filtered.acessorios, 'acessorios');
     
     // Renderiza com base no filtro
     const roupasGrid = document.getElementById('roupasGrid');
@@ -1803,6 +2323,8 @@ function handleSearch(query) {
         if (secCalcados) {
             secCalcados.style.display = filtered.calcados.length > 0 ? 'block' : 'none';
         }
+        // Processar imagens verticais de calçados após carregamento
+        setTimeout(() => processShoesImages(), 200);
     }
     if (acessoriosGrid) {
         acessoriosGrid.innerHTML = '';
@@ -1863,6 +2385,12 @@ function openProductModal(productId) {
     }
     
     console.log('Produto encontrado:', product.name);
+    
+    // Se for produto de calçados, processar imagens verticais
+    if (product.category === 'calcados') {
+        console.log('👟 Produto de calçados detectado, processando imagens...');
+        setTimeout(() => processShoesImages(), 100);
+    }
     
     const modal = document.getElementById('productModal');
     const modalBody = document.getElementById('productModalBody');
@@ -2383,10 +2911,107 @@ function adjustImageContainer(img) {
         // Aplicar altura calculada
         container.style.height = `${idealHeight}px`;
         
+        // Verificar se é uma imagem vertical (altura > largura) e se está na seção de calçados
+        const isVerticalImage = img.naturalHeight > img.naturalWidth;
+        const isInShoesSection = container.closest('#calcadosGrid') !== null;
+        
+        // Debug: log das dimensões para verificar
+        console.log(`Imagem: ${img.naturalWidth}x${img.naturalHeight}, Aspect Ratio: ${imgAspectRatio.toFixed(2)}, Vertical: ${isVerticalImage}, Calçados: ${isInShoesSection}`);
+        
+        // Se for imagem vertical na seção de calçados, aplicar posicionamento inferior
+        if (isVerticalImage && isInShoesSection) {
+            img.classList.add('vertical-shoe');
+            console.log('✅ Aplicado object-position: bottom para imagem vertical de calçados');
+        }
+        
         // Adicionar classe para animação suave
         container.classList.add('image-adjusted');
     }, 100);
 }
+
+// Função para processar todas as imagens de calçados após carregamento
+function processShoesImages() {
+    console.log('🔍 Iniciando processamento de imagens de calçados...');
+    const shoesGrid = document.getElementById('calcadosGrid');
+    if (!shoesGrid) {
+        console.log('❌ Grid de calçados não encontrado');
+        return;
+    }
+    
+    const images = shoesGrid.querySelectorAll('.product-image img');
+    console.log(`📸 Encontradas ${images.length} imagens no grid de calçados`);
+    
+    images.forEach((img, index) => {
+        console.log(`🔍 Processando imagem ${index + 1}:`);
+        console.log(`   - Src: ${img.src}`);
+        console.log(`   - Complete: ${img.complete}`);
+        console.log(`   - Natural dimensions: ${img.naturalWidth}x${img.naturalHeight}`);
+        
+        if (img.complete && img.naturalWidth > 0) {
+            // Processar imagem já carregada
+            const isVerticalImage = img.naturalHeight > img.naturalWidth;
+            console.log(`   - É vertical: ${isVerticalImage} (${img.naturalHeight} > ${img.naturalWidth})`);
+            
+            if (isVerticalImage) {
+                img.classList.add('vertical-shoe');
+                console.log(`✅ Aplicado object-position: bottom para imagem ${index + 1}`);
+            } else {
+                console.log(`➡️ Imagem ${index + 1} é horizontal, mantendo posição center`);
+            }
+        } else {
+            console.log(`⏳ Imagem ${index + 1} ainda não carregou, aguardando...`);
+            // Aguardar carregamento
+            img.addEventListener('load', function() {
+                const isVerticalImage = this.naturalHeight > this.naturalWidth;
+                console.log(`   - Após load: ${this.naturalWidth}x${this.naturalHeight}, Vertical: ${isVerticalImage}`);
+                
+                if (isVerticalImage) {
+                    this.classList.add('vertical-shoe');
+                    console.log(`✅ Aplicado object-position: bottom para imagem ${index + 1} após load`);
+                } else {
+                    console.log(`➡️ Imagem ${index + 1} é horizontal após load, mantendo posição center`);
+                }
+            });
+        }
+    });
+    
+    console.log('🏁 Processamento de imagens de calçados concluído');
+}
+
+// Função para forçar processamento de todas as imagens (pode ser chamada manualmente)
+function forceProcessAllImages() {
+    console.log('🔄 Forçando processamento de todas as imagens...');
+    
+    // Processar todas as seções
+    const allGrids = ['roupasGrid', 'calcadosGrid', 'acessoriosGrid'];
+    
+    allGrids.forEach(gridId => {
+        const grid = document.getElementById(gridId);
+        if (!grid) return;
+        
+        const images = grid.querySelectorAll('.product-image img');
+        console.log(`📸 Processando ${images.length} imagens em ${gridId}`);
+        
+        images.forEach((img, index) => {
+            if (img.complete && img.naturalWidth > 0) {
+                const isVerticalImage = img.naturalHeight > img.naturalWidth;
+                const isInShoesSection = gridId === 'calcadosGrid';
+                
+                console.log(`   Imagem ${index + 1}: ${img.naturalWidth}x${img.naturalHeight}, Vertical: ${isVerticalImage}, Calçados: ${isInShoesSection}`);
+                
+                if (isVerticalImage && isInShoesSection) {
+                    img.classList.add('vertical-shoe');
+                    console.log(`   ✅ Aplicado object-position: bottom`);
+                }
+            }
+        });
+    });
+    
+    console.log('🏁 Processamento forçado concluído');
+}
+
+// Disponibilizar função globalmente para debug
+window.forceProcessAllImages = forceProcessAllImages;
 
 // Funções para modais de suporte
 function openSupportModal(modalId) {
@@ -2547,7 +3172,6 @@ function setupFilterToggleButtons() {
 
 // Função para gerar filtros dinamicamente baseados na coluna B da planilha
 function generateDynamicFilters() {
-    console.log('Gerando filtros dinâmicos baseados na planilha...');
     
     // Coletar todos os valores únicos da coluna B (público) por categoria
     const filterData = {
@@ -3211,12 +3835,19 @@ function setupCategoryFilters(category) {
 }
 
 function applyFilters(category) {
+    console.log(`🔧 Aplicando filtros para categoria: ${category}`);
+    
     const filtersContainer = document.getElementById(`${category}Filters`);
-    if (!filtersContainer) return;
+    if (!filtersContainer) {
+        console.log(`❌ Container de filtros não encontrado: ${category}Filters`);
+        return;
+    }
 
     // Coletar filtros ativos
     const activeFilters = {};
     const filterOptions = filtersContainer.querySelectorAll('.filter-options');
+    
+    console.log(`📋 Encontrados ${filterOptions.length} filtros para ${category}`);
     
     filterOptions.forEach(options => {
         let filterType;
@@ -3262,30 +3893,56 @@ function applyFilters(category) {
         productsToFilter = acessoriosProducts;
     }
 
-    const filteredProducts = productsToFilter.filter(product => {
+    let filteredProducts = productsToFilter.filter(product => {
         return Object.keys(activeFilters).every(filterType => {
             const filterValues = activeFilters[filterType];
             
             switch (filterType) {
                 case 'marca':
-                    return filterValues.includes(product.brand);
+                    // Comparação case-insensitive e flexível
+                    if (!product.brand) return false;
+                    const productBrand = product.brand.toLowerCase();
+                    return filterValues.some(filterValue => {
+                        const filterValueLower = filterValue.toLowerCase();
+                        return productBrand === filterValueLower || 
+                               productBrand.includes(filterValueLower) || 
+                               filterValueLower.includes(productBrand);
+                    });
                 case 'tamanho':
-                    return filterValues.some(size => product.sizes.includes(size));
+                    return product.sizes && filterValues.some(size => product.sizes.includes(size));
                 case 'preco':
                     return filterValues.some(range => {
                         const [min, max] = range.split('-').map(v => v === '+' ? Infinity : parseFloat(v));
-                        return product.price >= min && product.price <= max;
+                        return product.price >= min && (max === Infinity ? true : product.price <= max);
                     });
                 case 'cor':
                     return product.colors && product.colors.some(color => 
                         color && color.name && filterValues.includes(color.name)
                     );
                 case 'tipo':
-                    return filterValues.includes(product.type);
+                    // Comparação case-insensitive e flexível
+                    if (!product.type) return false;
+                    const productType = product.type.toLowerCase();
+                    return filterValues.some(filterValue => {
+                        const filterValueLower = filterValue.toLowerCase();
+                        return productType === filterValueLower || 
+                               productType.includes(filterValueLower) || 
+                               filterValueLower.includes(productType);
+                    });
                 case 'material':
-                    return filterValues.includes(product.material);
+                    // Comparação case-insensitive
+                    if (!product.material) return false;
+                    const productMaterial = product.material.toLowerCase();
+                    return filterValues.some(filterValue => 
+                        productMaterial === filterValue.toLowerCase()
+                    );
                 case 'publico':
-                    return filterValues.includes(product.publico);
+                    // Comparação case-insensitive
+                    if (!product.publico) return false;
+                    const productPublico = product.publico.toLowerCase();
+                    return filterValues.some(filterValue => 
+                        productPublico === filterValue.toLowerCase()
+                    );
                 default:
                     return true;
             }
@@ -3295,8 +3952,15 @@ function applyFilters(category) {
     // Atualizar filtros dinamicamente baseado nos produtos filtrados
     updateDynamicFilters(category, filteredProducts, activeFilters);
 
+    // 🎨 Agrupar produtos por tipo e ordenar por cor ANTES de renderizar
+    if (filteredProducts.length > 0) {
+        filteredProducts = groupProductsByTypeWithCustomOrder(filteredProducts, category);
+    }
+
     // Renderizar produtos filtrados
     const grid = document.getElementById(`${category}Grid`);
+    const section = document.getElementById(category);
+    
     if (grid) {
         grid.innerHTML = '';
         
@@ -3306,29 +3970,36 @@ function applyFilters(category) {
             const productCard = createProductCard(product);
             grid.appendChild(productCard);
         });
+            
+            // Mostrar seção se estava oculta
+            if (section) {
+                section.style.display = 'block';
+            }
         } else {
-            // Mostrar mensagem quando não há produtos
+            // Se há filtros ativos e nenhum produto, mostrar mensagem personalizada
             const noProductsMessage = document.createElement('div');
             noProductsMessage.className = 'no-products-message';
             noProductsMessage.innerHTML = `
                 <div class="no-products-content">
-                    <i class="fas fa-search"></i>
-                    <h3>Nenhum produto encontrado</h3>
-                    <p>Nenhum produto com os filtros aplicados foi encontrado.</p>
-                    <button class="btn-clear-filters" onclick="clearFilters('${category}')">
-                        <i class="fas fa-times"></i>
-                        Limpar Filtros
-                    </button>
+                    <i class="fas fa-box-open"></i>
+                    <h3>Produtos em breve!</h3>
+                    <p>Esta seção não tem produtos disponíveis ainda, mas aguarde novidades em breve! Estamos trabalhando para trazer os melhores produtos para você.</p>
+                    <p style="margin-top: 12px;">Fique à vontade para navegar por outras seções.</p>
+                    <div style="margin-top: 30px; display: flex; justify-content: center;">
+                        <a href="index.html" class="btn-back-home-styled">
+                            <i class="fas fa-home"></i>
+                            Voltar para Home
+                        </a>
+                    </div>
                 </div>
             `;
             grid.appendChild(noProductsMessage);
-        }
-    }
+            grid.classList.add('empty-grid');
 
-    // Sempre mostrar a seção, mesmo quando não há produtos
-    const section = document.getElementById(category);
     if (section) {
         section.style.display = 'block';
+            }
+        }
     }
 }
 
@@ -3968,6 +4639,12 @@ function clearFilters(category) {
 
     // Re-renderizar produtos originais
     renderCategoryProducts();
+    
+    // Garantir que a seção esteja visível
+    const section = document.getElementById(category);
+    if (section) {
+        section.style.display = 'block';
+    }
 }
 
 // Funcionalidade para esconder botões de filtro quando navbar passar por eles
@@ -4331,3 +5008,409 @@ window.testParseNumber = function() {
         }
     });
 };
+
+// =====================
+// APLICAR FILTROS DA URL (Deep Linking)
+// =====================
+
+function applyFiltersFromURL() {
+    // Aguardar um pouco para garantir que os produtos foram carregados
+    setTimeout(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoria = urlParams.get('categoria');
+        const tipo = urlParams.get('tipo');
+        const marca = urlParams.get('marca');
+        
+        console.log(`🌐 URL atual: ${window.location.href}`);
+        console.log(`📋 Parâmetros encontrados: categoria=${categoria}, tipo=${tipo}, marca=${marca}`);
+        
+        // Se não há nenhum parâmetro, não faz nada
+        if (!categoria && !tipo && !marca) {
+            console.log(`ℹ️ Nenhum parâmetro de filtro encontrado na URL`);
+            return;
+        }
+        
+        // Se há marca mas não há tipo, aplicar marca em TODAS as categorias
+        if (marca && !tipo) {
+            setTimeout(() => {
+                applyBrandFilterToAllCategories(marca);
+                // Scroll para a primeira categoria com produtos dessa marca
+                scrollToFirstCategoryWithBrand(marca);
+            }, 1000);
+            return;
+        }
+        
+        // Se há categoria específica, aplicar filtros nela
+        if (categoria) {
+            // Scroll para a seção
+            const section = document.getElementById(categoria);
+            if (section) {
+                setTimeout(() => {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 500);
+            }
+            
+            // Aplicar filtros se especificados
+            if (tipo || marca) {
+                setTimeout(() => {
+                    applyURLFilters(categoria, tipo, marca);
+                }, 1000); // Aguardar produtos renderizarem
+            }
+        }
+    }, 1500); // Aguardar carregamento inicial
+}
+
+// Nova função que aguarda a conclusão dos filtros
+async function applyFiltersFromURLWithDelay() {
+    return new Promise((resolve) => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoria = urlParams.get('categoria');
+        const tipo = urlParams.get('tipo');
+        const marca = urlParams.get('marca');
+        
+        console.log(`🌐 URL atual: ${window.location.href}`);
+        console.log(`📋 Parâmetros encontrados: categoria=${categoria}, tipo=${tipo}, marca=${marca}`);
+        
+        // Se não há nenhum parâmetro, resolver imediatamente
+        if (!categoria && !tipo && !marca) {
+            console.log(`ℹ️ Nenhum parâmetro de filtro encontrado na URL`);
+            resolve();
+            return;
+        }
+        
+        // Se há marca mas não há tipo, aplicar marca em TODAS as categorias
+        if (marca && !tipo) {
+            setTimeout(() => {
+                applyBrandFilterToAllCategories(marca);
+                // Scroll para a primeira categoria com produtos dessa marca
+                scrollToFirstCategoryWithBrand(marca);
+                // Aguardar um pouco mais para garantir que tudo foi aplicado
+                setTimeout(resolve, 500);
+            }, 1000);
+        } else {
+            // Aplicar filtros específicos
+            setTimeout(() => {
+                if (categoria && tipo) {
+                    applyURLFilters(categoria, tipo, marca);
+                } else if (categoria) {
+                    applyURLFilters(categoria, null, marca);
+                }
+                // Aguardar um pouco mais para garantir que tudo foi aplicado
+                setTimeout(resolve, 500);
+            }, 1500); // Aguardar carregamento inicial
+        }
+    });
+}
+
+function applyURLFilters(categoria, tipo, marca) {
+    console.log(`🔗 Aplicando filtros da URL: categoria=${categoria}, tipo=${tipo}, marca=${marca}`);
+    
+    const filtersContainer = document.getElementById(`${categoria}Filters`);
+    if (!filtersContainer) {
+        console.log(`❌ Container de filtros não encontrado: ${categoria}Filters`);
+        return;
+    }
+    
+    // Aplicar filtro de tipo
+    if (tipo) {
+        let filterId;
+        if (categoria === 'roupas') {
+            filterId = 'tipoRoupasFilter';
+        } else if (categoria === 'calcados') {
+            filterId = 'tipoCalcadosFilter';
+        } else if (categoria === 'acessorios') {
+            filterId = 'tipoAcessoriosFilter';
+        }
+        
+        console.log(`🎯 Procurando filtro de tipo: ${filterId}`);
+        
+        if (filterId) {
+            const filterOptions = document.getElementById(filterId);
+            if (filterOptions) {
+                const checkboxes = filterOptions.querySelectorAll('input[type="checkbox"]');
+                console.log(`📋 Encontrados ${checkboxes.length} checkboxes de tipo`);
+                
+                checkboxes.forEach(checkbox => {
+                    const checkboxValue = checkbox.value.toLowerCase();
+                    const tipoLower = tipo.toLowerCase();
+                    
+                    console.log(`🔍 Comparando: "${checkboxValue}" com "${tipoLower}"`);
+                    
+                    // Comparação flexível: "sandalia" encontra "sandália" ou "sandalias"
+                    const isMatch = checkboxValue === tipoLower || 
+                        checkboxValue.includes(tipoLower) || 
+                        tipoLower.includes(checkboxValue) ||
+                        normalizeTextBasic(checkboxValue) === normalizeTextBasic(tipoLower) ||
+                        // Comparações específicas para sandálias
+                        (tipoLower === 'sandalia' && (checkboxValue.includes('sand') || checkboxValue.includes('ália'))) ||
+                        (checkboxValue === 'sandalia' && tipoLower.includes('sand'));
+                    
+                    if (isMatch) {
+                        checkbox.checked = true;
+                        console.log(`✅ Tipo "${checkbox.value}" marcado! Checkbox checked: ${checkbox.checked}`);
+                        
+                        // Disparar evento de change para garantir que o filtro seja aplicado
+                        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else {
+                        console.log(`❌ Tipo "${checkbox.value}" não corresponde a "${tipo}"`);
+                    }
+                });
+            }
+        }
+    }
+    
+    // Aplicar filtro de marca
+    if (marca) {
+        let filterId;
+        if (categoria === 'roupas') {
+            filterId = 'marcaFilter';
+        } else if (categoria === 'calcados') {
+            filterId = 'marcaCalcadosFilter';
+        } else if (categoria === 'acessorios') {
+            filterId = 'marcaAcessoriosFilter';
+        }
+        
+        if (filterId) {
+            const filterOptions = document.getElementById(filterId);
+            if (filterOptions) {
+                const checkboxes = filterOptions.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    const checkboxValue = checkbox.value.toLowerCase();
+                    const marcaLower = marca.toLowerCase();
+                    
+                    // Comparação flexível: "jorge" encontra "Jorge Bischoff"
+                    if (checkboxValue === marcaLower || 
+                        checkboxValue.includes(marcaLower) || 
+                        marcaLower.includes(checkboxValue)) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+        }
+    }
+    
+    // Aplicar os filtros com delay para garantir que os checkboxes sejam marcados
+    setTimeout(() => {
+        console.log(`🚀 Aplicando filtros para categoria: ${categoria}`);
+        applyFilters(categoria);
+    }, 100);
+    
+    // Ocultar outras seções que não correspondem ao filtro
+    const allCategories = ['roupas', 'calcados', 'acessorios'];
+    allCategories.forEach(cat => {
+        if (cat !== categoria) {
+            const section = document.getElementById(cat);
+            if (section) {
+                console.log(`🙈 Ocultando seção: ${cat}`);
+                section.style.display = 'none';
+            }
+        }
+    });
+    
+    // Scroll para a seção
+    setTimeout(() => {
+        const section = document.getElementById(categoria);
+        if (section) {
+            console.log(`📍 Fazendo scroll para seção: ${categoria}`);
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 500);
+}
+
+// Aplicar filtro de marca em TODAS as categorias
+function applyBrandFilterToAllCategories(marca) {
+    console.log(`🏷️ Aplicando marca "${marca}" em TODAS as categorias...`);
+    
+    const categorias = [
+        { nome: 'roupas', filterId: 'marcaFilter' },
+        { nome: 'calcados', filterId: 'marcaCalcadosFilter' },
+        { nome: 'acessorios', filterId: 'marcaAcessoriosFilter' }
+    ];
+    
+    categorias.forEach(({ nome, filterId }) => {
+        const filterOptions = document.getElementById(filterId);
+        if (!filterOptions) {
+            console.log(`  ⚠️ ${nome}: filtro ${filterId} não encontrado`);
+            // Ocultar seção se filtro não existe
+            const section = document.getElementById(nome);
+            if (section) section.style.display = 'none';
+            return;
+        }
+        
+        const checkboxes = filterOptions.querySelectorAll('input[type="checkbox"]');
+        let marcaEncontrada = false;
+        
+        console.log(`  🔍 ${nome}: Procurando marca "${marca}" entre ${checkboxes.length} opções...`);
+        
+        // Desmarcar todos primeiro
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        // Marcar apenas se encontrar a marca
+        checkboxes.forEach(checkbox => {
+            const checkboxValue = checkbox.value.toLowerCase();
+            const marcaLower = marca.toLowerCase();
+            
+            // Comparação flexível
+            if (checkboxValue === marcaLower || 
+                checkboxValue.includes(marcaLower) || 
+                marcaLower.includes(checkboxValue)) {
+                checkbox.checked = true;
+                marcaEncontrada = true;
+                console.log(`    ✅ ${nome}: Marca "${checkbox.value}" encontrada e marcada!`);
+            }
+        });
+        
+        if (marcaEncontrada) {
+            // Marca encontrada - aplicar filtro normalmente
+            applyFilters(nome);
+        } else {
+            // Marca NÃO encontrada - ocultar seção diretamente
+            console.log(`    ❌ ${nome}: Marca "${marca}" NÃO encontrada - OCULTANDO seção`);
+            const section = document.getElementById(nome);
+            if (section) {
+                section.style.display = 'none';
+            }
+        }
+    });
+    
+    console.log(`✅ Filtros aplicados em todas as categorias`);
+}
+
+// Scroll para primeira categoria que tem produtos da marca
+function scrollToFirstCategoryWithBrand(marca) {
+    // Aguardar um pouco para as seções serem ocultadas
+    setTimeout(() => {
+        const categorias = ['roupas', 'calcados', 'acessorios'];
+        
+        for (const categoria of categorias) {
+            const section = document.getElementById(categoria);
+            
+            // Verificar se a seção está visível (não foi ocultada)
+            if (section && section.style.display !== 'none') {
+                const grid = document.getElementById(`${categoria}Grid`);
+                
+                // Verificar se tem produtos
+                if (grid && grid.children.length > 0) {
+                    const hasProducts = !grid.querySelector('.no-products-message');
+                    
+                    if (hasProducts) {
+                        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        break;
+                    }
+                }
+            }
+        }
+    }, 1200); // Aguardar filtros serem aplicados e seções ocultadas
+}
+
+// Função para verificar se os produtos foram renderizados
+function checkIfProductsAreRendered() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoria = urlParams.get('categoria');
+    
+    if (categoria) {
+        // Se há filtro de categoria, verificar se essa categoria tem produtos
+        const grid = document.getElementById(`${categoria}Grid`);
+        if (grid) {
+            const productCards = grid.querySelectorAll('.product-card');
+            return productCards.length > 0;
+        }
+    } else {
+        // Se não há filtro, verificar se pelo menos uma categoria tem produtos
+        const grids = ['roupasGrid', 'calcadosGrid', 'acessoriosGrid'];
+        return grids.some(gridId => {
+            const grid = document.getElementById(gridId);
+            if (grid) {
+                const productCards = grid.querySelectorAll('.product-card');
+                return productCards.length > 0;
+            }
+            return false;
+        });
+    }
+    
+    return false;
+}
+
+// Configurar balão de ajuda
+function setupHelpTooltip() {
+    const helpTooltip = document.getElementById('helpTooltip');
+    const helpFloatingBtn = document.getElementById('helpFloatingBtn');
+    const helpTooltipClose = document.getElementById('helpTooltipClose');
+    const helpTooltipDismiss = document.getElementById('helpTooltipDismiss');
+    
+    // Verificar se o usuário já viu o tutorial
+    const hasSeenHelp = localStorage.getItem('stylus-help-seen');
+    
+    // Mostrar automaticamente após 3 segundos se não viu antes
+    if (!hasSeenHelp) {
+        setTimeout(() => {
+            showHelpTooltip();
+        }, 3000);
+    }
+    
+    // Botão flutuante para mostrar ajuda
+    if (helpFloatingBtn) {
+        helpFloatingBtn.addEventListener('click', showHelpTooltip);
+    }
+    
+    // Botão fechar (X)
+    if (helpTooltipClose) {
+        helpTooltipClose.addEventListener('click', hideHelpTooltip);
+    }
+    
+    // Botão "Entendi!"
+    if (helpTooltipDismiss) {
+        helpTooltipDismiss.addEventListener('click', function() {
+            hideHelpTooltip();
+            localStorage.setItem('stylus-help-seen', 'true');
+        });
+    }
+    
+    // Fechar clicando fora do balão
+    if (helpTooltip) {
+        helpTooltip.addEventListener('click', function(e) {
+            if (e.target === helpTooltip) {
+                hideHelpTooltip();
+            }
+        });
+    }
+    
+    // Fechar com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && helpTooltip && helpTooltip.classList.contains('active')) {
+            hideHelpTooltip();
+        }
+    });
+}
+
+function showHelpTooltip() {
+    const helpTooltip = document.getElementById('helpTooltip');
+    if (helpTooltip) {
+        helpTooltip.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Animação do botão flutuante
+        const helpFloatingBtn = document.getElementById('helpFloatingBtn');
+        if (helpFloatingBtn) {
+            helpFloatingBtn.style.transform = 'scale(0.9)';
+            helpFloatingBtn.style.opacity = '0.7';
+        }
+    }
+}
+
+function hideHelpTooltip() {
+    const helpTooltip = document.getElementById('helpTooltip');
+    if (helpTooltip) {
+        helpTooltip.classList.remove('active');
+        document.body.style.overflow = '';
+        
+        // Restaurar botão flutuante
+        const helpFloatingBtn = document.getElementById('helpFloatingBtn');
+        if (helpFloatingBtn) {
+            helpFloatingBtn.style.transform = '';
+            helpFloatingBtn.style.opacity = '';
+        }
+    }
+}

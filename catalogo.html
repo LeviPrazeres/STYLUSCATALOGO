@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - Stylus Concept</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/favicon.ico">
+    <link rel="preload" as="image" href="images/fundo1.jpg">
+    <link rel="preload" as="image" href="images/fundo2.jpg">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <a href="index.html">
+                        <img src="images/logo.png" alt="Stylus's Concept" class="logo">
+                    </a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#roupas" class="nav-link"><i class="fas fa-tshirt"></i> Roupas</a></li>
+                    <li><a href="#calcados" class="nav-link"><i class="fas fa-shoe-prints"></i> Calçados</a></li>
+                    <li><a href="#acessorios" class="nav-link"><i class="fas fa-gem"></i> Acessórios</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <div class="search-bar" id="searchBar">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Buscar produtos..." aria-label="Buscar produtos">
+                        <button class="clear-search" id="clearSearch" title="Limpar busca">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button class="icon-btn search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="icon-btn cart-btn" id="cartBtn">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                </div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+        </div>
+        <p class="loading-text">Carregando produtos...</p>
+    </div>
+
+    <!-- Catalog Header -->
+    <section class="catalog-header">
+        <div class="container">
+            <div class="catalog-intro">
+                <h1 class="catalog-title">Nosso Catálogo</h1>
+                <p class="catalog-description">Explore nossa coleção completa de roupas, calçados e acessórios premium</p>
+            </div>
+            <div class="catalog-quick-links">
+                <a href="#roupas" class="quick-link">
+                    <i class="fas fa-tshirt"></i>
+                    <span>Roupas</span>
+                </a>
+                <a href="#calcados" class="quick-link">
+                    <i class="fas fa-shoe-prints"></i>
+                    <span>Calçados</span>
+                </a>
+                <a href="#acessorios" class="quick-link">
+                    <i class="fas fa-gem"></i>
+                    <span>Acessórios</span>
+                </a>
+                <button class="quick-link clear-all-btn" id="clearAllFilters" title="Mostrar todas as categorias">
+                    <i class="fas fa-eye"></i>
+                    <span>Ver Todas</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Balão de Ajuda -->
+    <div class="help-tooltip" id="helpTooltip">
+        <div class="help-tooltip-content">
+            <div class="help-tooltip-header">
+                <h3><i class="fas fa-lightbulb"></i> Como usar o site</h3>
+                <button class="help-tooltip-close" id="helpTooltipClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="help-tooltip-body">
+                <div class="help-step">
+                    <div class="help-step-number">1</div>
+                    <div class="help-step-content">
+                        <h4><i class="fas fa-mouse-pointer"></i> Clique no produto</h4>
+                        <p>Clique em qualquer produto para ver os detalhes, cores e tamanhos disponíveis</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-number">2</div>
+                    <div class="help-step-content">
+                        <h4><i class="fas fa-shopping-cart"></i> Adicione ao carrinho</h4>
+                        <p>Escolha o tamanho e cor desejados, depois clique em "Adicionar ao Carrinho"</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-number">3</div>
+                    <div class="help-step-content">
+                        <h4><i class="fas fa-whatsapp"></i> Finalize sua compra</h4>
+                        <p>Ao fechar o carrinho, você será redirecionado para o WhatsApp para finalizar sua compra</p>
+                    </div>
+                </div>
+            </div>
+            <div class="help-tooltip-footer">
+                <button class="help-tooltip-dismiss" id="helpTooltipDismiss">
+                    <i class="fas fa-check"></i> Entendi!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão de Ajuda Flutuante -->
+    <div class="help-floating-btn" id="helpFloatingBtn">
+        <i class="fas fa-question-circle"></i>
+        <span class="help-floating-text">Como usar?</span>
+    </div>
+
+    <!-- Seção Roupas -->
+    <section class="category-section" id="roupas">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title-container">
+                    <h2 class="section-title">Roupas</h2>
+                    <p class="section-subtitle">Descubra nossa coleção completa de roupas elegantes e contemporâneas</p>
+                </div>
+                <div class="filter-dropdown-container">
+                    <button class="filter-toggle-btn" id="toggleRoupasFilters">
+                        <i class="fas fa-filter"></i>
+                        Filtros
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <!-- Dropdown de Filtros para Roupas -->
+                    <div class="filters-dropdown hidden" id="roupasFilters">
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="marca">
+                        <i class="fas fa-tags"></i>
+                        Marca
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="marcaFilter">
+                        <label><input type="checkbox" value="nike"> Nike</label>
+                        <label><input type="checkbox" value="adidas"> Adidas</label>
+                        <label><input type="checkbox" value="puma"> Puma</label>
+                        <label><input type="checkbox" value="lacoste"> Lacoste</label>
+                        <label><input type="checkbox" value="tommy"> Tommy Hilfiger</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="tamanho">
+                        <i class="fas fa-ruler"></i>
+                        Tamanho
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="tamanhoFilter">
+                        <label><input type="checkbox" value="P"> P</label>
+                        <label><input type="checkbox" value="M"> M</label>
+                        <label><input type="checkbox" value="G"> G</label>
+                        <label><input type="checkbox" value="GG"> GG</label>
+                        <label><input type="checkbox" value="XG"> XG</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="cor">
+                        <i class="fas fa-palette"></i>
+                        Cor
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="corRoupasFilter">
+                        <!-- Opções de cor serão geradas dinamicamente -->
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="preco">
+                        <i class="fas fa-dollar-sign"></i>
+                        Preço
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="precoFilter">
+                        <label><input type="checkbox" value="0-50"> Até R$ 50</label>
+                        <label><input type="checkbox" value="50-100"> R$ 50 - R$ 100</label>
+                        <label><input type="checkbox" value="100-200"> R$ 100 - R$ 200</label>
+                        <label><input type="checkbox" value="200-500"> R$ 200 - R$ 500</label>
+                        <label><input type="checkbox" value="500+"> Acima de R$ 500</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="tipo">
+                        <i class="fas fa-tshirt"></i>
+                        Tipo
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="tipoRoupasFilter">
+                        <label><input type="checkbox" value="blusas e camisas"> Blusas e Camisas</label>
+                        <label><input type="checkbox" value="vestidos"> Vestidos</label>
+                        <label><input type="checkbox" value="conjuntos"> Conjuntos</label>
+                        <label><input type="checkbox" value="shorts"> Shorts</label>
+                        <label><input type="checkbox" value="calças"> Calças</label>
+                        <label><input type="checkbox" value="camisa"> Camisa</label>
+                        <label><input type="checkbox" value="blusa"> Blusa</label>
+                        <label><input type="checkbox" value="bermuda"> Bermuda</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="publico">
+                        <i class="fas fa-users"></i>
+                        Público
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="publicoRoupasFilter">
+                        <label><input type="checkbox" value="masculino"> Masculino</label>
+                        <label><input type="checkbox" value="feminino"> Feminino</label>
+                        <label><input type="checkbox" value="infantil"> Infantil</label>
+                    </div>
+                </div>
+                
+                
+                        <button class="clear-filters" id="clearRoupasFilters">
+                            <i class="fas fa-times"></i>
+                            Limpar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="products-grid" id="roupasGrid">
+                <!-- Produtos de roupas serão inseridos aqui via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção Calçados -->
+    <section class="category-section" id="calcados">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title-container">
+                    <h2 class="section-title">Calçados</h2>
+                    <p class="section-subtitle">Calçados sofisticados que complementam perfeitamente seu estilo</p>
+                </div>
+                <div class="filter-dropdown-container">
+                    <button class="filter-toggle-btn" id="toggleCalcadosFilters">
+                        <i class="fas fa-filter"></i>
+                        Filtros
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <!-- Dropdown de Filtros para Calçados -->
+                    <div class="filters-dropdown hidden" id="calcadosFilters">
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="marca">
+                        <i class="fas fa-tags"></i>
+                        Marca
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="marcaCalcadosFilter">
+                        <label><input type="checkbox" value="nike"> Nike</label>
+                        <label><input type="checkbox" value="adidas"> Adidas</label>
+                        <label><input type="checkbox" value="puma"> Puma</label>
+                        <label><input type="checkbox" value="converse"> Converse</label>
+                        <label><input type="checkbox" value="vans"> Vans</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="tamanho">
+                        <i class="fas fa-ruler"></i>
+                        Tamanho
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="tamanhoCalcadosFilter">
+                        <label><input type="checkbox" value="35"> 35</label>
+                        <label><input type="checkbox" value="36"> 36</label>
+                        <label><input type="checkbox" value="37"> 37</label>
+                        <label><input type="checkbox" value="38"> 38</label>
+                        <label><input type="checkbox" value="39"> 39</label>
+                        <label><input type="checkbox" value="40"> 40</label>
+                        <label><input type="checkbox" value="41"> 41</label>
+                        <label><input type="checkbox" value="42"> 42</label>
+                        <label><input type="checkbox" value="43"> 43</label>
+                        <label><input type="checkbox" value="44"> 44</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="cor">
+                        <i class="fas fa-palette"></i>
+                        Cor
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="corCalcadosFilter">
+                        <!-- Opções de cor serão geradas dinamicamente -->
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="preco">
+                        <i class="fas fa-dollar-sign"></i>
+                        Preço
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="precoCalcadosFilter">
+                        <label><input type="checkbox" value="0-100"> Até R$ 100</label>
+                        <label><input type="checkbox" value="100-200"> R$ 100 - R$ 200</label>
+                        <label><input type="checkbox" value="200-300"> R$ 200 - R$ 300</label>
+                        <label><input type="checkbox" value="300-500"> R$ 300 - R$ 500</label>
+                        <label><input type="checkbox" value="500+"> Acima de R$ 500</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="tipo">
+                        <i class="fas fa-shoe-prints"></i>
+                        Tipo
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="tipoCalcadosFilter">
+                        <label><input type="checkbox" value="tenis"> Tênis</label>
+                        <label><input type="checkbox" value="sapato"> Sapato</label>
+                        <label><input type="checkbox" value="sandalia"> Sandália</label>
+                        <label><input type="checkbox" value="bota"> Bota</label>
+                        <label><input type="checkbox" value="chinelo"> Chinelo</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="publico">
+                        <i class="fas fa-users"></i>
+                        Público
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="publicoCalcadosFilter">
+                        <label><input type="checkbox" value="masculino"> Masculino</label>
+                        <label><input type="checkbox" value="feminino"> Feminino</label>
+                        <label><input type="checkbox" value="infantil"> Infantil</label>
+                    </div>
+                </div>
+                
+                        <button class="clear-filters" id="clearCalcadosFilters">
+                            <i class="fas fa-times"></i>
+                            Limpar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="products-grid" id="calcadosGrid">
+                <!-- Produtos de calçados serão inseridos aqui via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção Acessórios -->
+    <section class="category-section" id="acessorios">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title-container">
+                    <h2 class="section-title">Acessórios</h2>
+                    <p class="section-subtitle">Acessórios únicos para completar seus looks com personalidade</p>
+                </div>
+                <div class="filter-dropdown-container">
+                    <button class="filter-toggle-btn" id="toggleAcessoriosFilters">
+                        <i class="fas fa-filter"></i>
+                        Filtros
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <!-- Dropdown de Filtros para Acessórios -->
+                    <div class="filters-dropdown hidden" id="acessoriosFilters">
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="marca">
+                        <i class="fas fa-tags"></i>
+                        Marca
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="marcaAcessoriosFilter">
+                        <label><input type="checkbox" value="gucci"> Gucci</label>
+                        <label><input type="checkbox" value="louis"> Louis Vuitton</label>
+                        <label><input type="checkbox" value="chanel"> Chanel</label>
+                        <label><input type="checkbox" value="prada"> Prada</label>
+                        <label><input type="checkbox" value="versace"> Versace</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="tipo">
+                        <i class="fas fa-gem"></i>
+                        Tipo
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="tipoAcessoriosFilter">
+                        <label><input type="checkbox" value="bolsa"> Bolsa</label>
+                        <label><input type="checkbox" value="carteira"> Carteira</label>
+                        <label><input type="checkbox" value="relogio"> Relógio</label>
+                        <label><input type="checkbox" value="oculos"> Óculos</label>
+                        <label><input type="checkbox" value="joia"> Joias</label>
+                        <label><input type="checkbox" value="cinto"> Cinto</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="cor">
+                        <i class="fas fa-palette"></i>
+                        Cor
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="corAcessoriosFilter">
+                        <!-- Opções de cor serão geradas dinamicamente -->
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="preco">
+                        <i class="fas fa-dollar-sign"></i>
+                        Preço
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="precoAcessoriosFilter">
+                        <label><input type="checkbox" value="0-100"> Até R$ 100</label>
+                        <label><input type="checkbox" value="100-300"> R$ 100 - R$ 300</label>
+                        <label><input type="checkbox" value="300-500"> R$ 300 - R$ 500</label>
+                        <label><input type="checkbox" value="500-1000"> R$ 500 - R$ 1.000</label>
+                        <label><input type="checkbox" value="1000+"> Acima de R$ 1.000</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="material">
+                        <i class="fas fa-cube"></i>
+                        Material
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="materialAcessoriosFilter">
+                        <label><input type="checkbox" value="couro"> Couro</label>
+                        <label><input type="checkbox" value="metal"> Metal</label>
+                        <label><input type="checkbox" value="tecido"> Tecido</label>
+                        <label><input type="checkbox" value="plastico"> Plástico</label>
+                        <label><input type="checkbox" value="madeira"> Madeira</label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-toggle" data-filter="publico">
+                        <i class="fas fa-users"></i>
+                        Público
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="publicoAcessoriosFilter">
+                        <label><input type="checkbox" value="masculino"> Masculino</label>
+                        <label><input type="checkbox" value="feminino"> Feminino</label>
+                        <label><input type="checkbox" value="infantil"> Infantil</label>
+                    </div>
+                </div>
+                
+                        <button class="clear-filters" id="clearAcessoriosFilters">
+                            <i class="fas fa-times"></i>
+                            Limpar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="products-grid" id="acessoriosGrid">
+                <!-- Produtos de acessórios serão inseridos aqui via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.png" alt="Stylus's Concept" class="footer-logo">
+                    <p class="footer-desc">Elegância e sofisticação em cada peça</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/stylusconcept?igsh=MTUzdHY5Mjg4MW90bg==" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/5577988024793" target="_blank" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4 class="footer-title">Produtos</h4>
+                        <ul class="footer-list">
+                            <li><a href="#roupas" class="footer-link">Roupas</a></li>
+                            <li><a href="#calcados" class="footer-link">Calçados</a></li>
+                            <li><a href="#acessorios" class="footer-link">Acessórios</a></li>
+                            
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4 class="footer-title">Suporte</h4>
+                        <ul class="footer-list">
+                            <li><a href="#" class="footer-link" data-modal="contatoModal">Contato</a></li>
+                            <li><a href="#" class="footer-link" data-modal="trocasModal">Trocas e Devoluções</a></li>
+                            <li><a href="#" class="footer-link" data-modal="faqModal">FAQ</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4 class="footer-title">Legal</h4>
+                        <ul class="footer-list">
+                            <li><a href="#" class="footer-link" data-modal="privacidadeModal">Política de Privacidade</a></li>
+                            <li><a href="#" class="footer-link" data-modal="termosModal">Termos de Uso</a></li>
+                            <li><a href="#" class="footer-link" data-modal="lgpdModal">LGPD</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Stylus Concept. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal do Carrinho -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-modal-content">
+            <div class="cart-header">
+                <h3>Seu Carrinho</h3>
+                <button class="close-cart" id="closeCart">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <!-- Itens do carrinho serão inseridos aqui -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <strong>Total: R$ <span id="cartTotal">0,00</span></strong>
+                </div>
+                <button class="btn btn-primary btn-block" id="checkoutBtn">
+                    <i class="fab fa-whatsapp"></i>
+                    Finalizar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes do Produto -->
+    <div class="product-modal" id="productModal">
+        <div class="product-modal-content">
+            <div class="product-modal-header">
+                <button class="close-product-modal" id="closeProductModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="product-modal-body" id="productModalBody">
+                <!-- Conteúdo do produto será inserido aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Contato -->
+    <div class="support-modal" id="contatoModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-envelope"></i> Contato</h3>
+                <button class="close-support-modal" data-modal="contatoModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fab fa-whatsapp"></i>
+                        <div>
+                            <h4>WhatsApp</h4>
+                            <p>+55 (77) 98802-4793</p>
+                            <a href="https://wa.me/5577988024793" target="_blank" class="contact-btn">Conversar no WhatsApp</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-instagram"></i>
+                        <div>
+                            <h4>Instagram</h4>
+                            <p>@stylusconcept</p>
+                            <a href="https://www.instagram.com/stylusconcept?igsh=MTUzdHY5Mjg4MW90bg==" target="_blank" class="contact-btn">Seguir no Instagram</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>E-mail</h4>
+                            <p>contato@stylusconcept.com</p>
+                            <a href="mailto:contato@stylusconcept.com" class="contact-btn">Enviar E-mail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Trocas e Devoluções -->
+    <div class="support-modal" id="trocasModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> Trocas e Devoluções</h3>
+                <button class="close-support-modal" data-modal="trocasModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="policy-content">
+                    <h4>Política de Trocas e Devoluções</h4>
+                    <div class="policy-section">
+                        <h5><i class="fas fa-clock"></i> Prazo</h5>
+                        <p>Você tem até 7 dias corridos após o recebimento do produto para solicitar troca ou devolução.</p>
+                    </div>
+                    <div class="policy-section">
+                        <h5><i class="fas fa-check-circle"></i> Condições</h5>
+                        <ul>
+                            <li>Produto deve estar em perfeito estado</li>
+                            <li>Etiquetas e embalagens originais</li>
+                            <li>Produto não pode ter sido usado</li>
+                            <li>Nota fiscal deve estar em dia</li>
+                        </ul>
+                    </div>
+                    <div class="policy-section">
+                        <h5><i class="fas fa-undo"></i> Como Solicitar</h5>
+                        <p>Entre em contato conosco via WhatsApp ou Instagram com o número do pedido e motivo da troca/devolução.</p>
+                    </div>
+                    <div class="policy-section">
+                        <h5><i class="fas fa-truck"></i> Frete</h5>
+                        <p>O frete de retorno fica por conta do cliente, exceto em casos de defeito do produto.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de FAQ -->
+    <div class="support-modal" id="faqModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-question-circle"></i> Perguntas Frequentes</h3>
+                <button class="close-support-modal" data-modal="faqModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="faq-content">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Como faço meu pedido?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Adicione os produtos desejados ao carrinho, selecione os tamanhos e clique em "Finalizar Pedido" para ser direcionado ao WhatsApp.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Quais formas de pagamento vocês aceitam?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Aceitamos PIX, cartão de crédito, débito e boleto bancário. O pagamento é processado de forma segura.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Qual o prazo de entrega?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>O prazo de entrega varia de 3 a 7 dias úteis, dependendo da sua localização e disponibilidade do produto.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Como saber meu tamanho?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Consulte nossa tabela de medidas disponível no Instagram ou entre em contato conosco para orientação personalizada.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Vocês fazem envios para todo o Brasil?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Sim, fazemos envios para todo o território nacional. O valor do frete é calculado automaticamente no checkout.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Política de Privacidade -->
+    <div class="support-modal" id="privacidadeModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-shield-alt"></i> Política de Privacidade</h3>
+                <button class="close-support-modal" data-modal="privacidadeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="legal-content">
+                    <div class="legal-section">
+                        <h4>1. Informações que Coletamos</h4>
+                        <p>Coletamos informações que você nos fornece diretamente, como nome, e-mail, telefone e endereço quando você faz um pedido ou entra em contato conosco.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>2. Como Usamos suas Informações</h4>
+                        <ul>
+                            <li>Processar e entregar seus pedidos</li>
+                            <li>Comunicar sobre produtos e promoções</li>
+                            <li>Melhorar nossos serviços</li>
+                            <li>Atender solicitações de suporte</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>3. Compartilhamento de Informações</h4>
+                        <p>Não vendemos, alugamos ou compartilhamos suas informações pessoais com terceiros, exceto quando necessário para processar pedidos ou cumprir obrigações legais.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>4. Segurança dos Dados</h4>
+                        <p>Implementamos medidas de segurança técnicas e organizacionais para proteger suas informações contra acesso não autorizado, alteração, divulgação ou destruição.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>5. Seus Direitos</h4>
+                        <p>Você tem o direito de acessar, corrigir, excluir ou portar seus dados pessoais. Para exercer esses direitos, entre em contato conosco.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>6. Alterações na Política</h4>
+                        <p>Esta política pode ser atualizada periodicamente. Notificaremos sobre mudanças significativas através do nosso site ou por e-mail.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Termos de Uso -->
+    <div class="support-modal" id="termosModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-file-contract"></i> Termos de Uso</h3>
+                <button class="close-support-modal" data-modal="termosModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="legal-content">
+                    <div class="legal-section">
+                        <h4>1. Aceitação dos Termos</h4>
+                        <p>Ao acessar e usar este site, você concorda em cumprir e estar sujeito aos seguintes termos e condições de uso.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>2. Uso do Site</h4>
+                        <ul>
+                            <li>Você pode navegar e comprar produtos em nosso site</li>
+                            <li>É proibido usar o site para atividades ilegais</li>
+                            <li>Você é responsável por manter a confidencialidade de sua conta</li>
+                            <li>Não é permitido reproduzir conteúdo sem autorização</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>3. Produtos e Preços</h4>
+                        <p>Reservamo-nos o direito de alterar preços, produtos e disponibilidade a qualquer momento. Os preços mostrados são válidos apenas no momento da compra.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>4. Pedidos e Pagamentos</h4>
+                        <ul>
+                            <li>Pedidos estão sujeitos à disponibilidade do produto</li>
+                            <li>Pagamentos são processados de forma segura</li>
+                            <li>Reservamo-nos o direito de recusar pedidos</li>
+                            <li>Impostos e taxas podem ser aplicados conforme legislação</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>5. Limitação de Responsabilidade</h4>
+                        <p>Não nos responsabilizamos por danos diretos, indiretos, incidentais ou consequenciais resultantes do uso do site ou produtos.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>6. Propriedade Intelectual</h4>
+                        <p>Todo o conteúdo do site, incluindo textos, imagens, logotipos e design, é propriedade da Stylus Concept e está protegido por leis de direitos autorais.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de LGPD -->
+    <div class="support-modal" id="lgpdModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-gavel"></i> Lei Geral de Proteção de Dados (LGPD)</h3>
+                <button class="close-support-modal" data-modal="lgpdModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="legal-content">
+                    <div class="legal-section">
+                        <h4>1. Conformidade com a LGPD</h4>
+                        <p>A Stylus Concept está em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018) e se compromete a proteger seus dados pessoais.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>2. Base Legal para Tratamento</h4>
+                        <ul>
+                            <li><strong>Execução de contrato:</strong> Para processar pedidos e entregas</li>
+                            <li><strong>Consentimento:</strong> Para comunicações de marketing</li>
+                            <li><strong>Interesse legítimo:</strong> Para melhorar nossos serviços</li>
+                            <li><strong>Obrigação legal:</strong> Para cumprir obrigações fiscais</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>3. Seus Direitos como Titular</h4>
+                        <ul>
+                            <li><strong>Acesso:</strong> Solicitar informações sobre seus dados</li>
+                            <li><strong>Correção:</strong> Corrigir dados incompletos ou incorretos</li>
+                            <li><strong>Exclusão:</strong> Solicitar remoção de dados desnecessários</li>
+                            <li><strong>Portabilidade:</strong> Transferir dados para outro fornecedor</li>
+                            <li><strong>Revogação:</strong> Retirar consentimento a qualquer momento</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>4. Dados de Menores</h4>
+                        <p>Não coletamos intencionalmente dados de menores de 18 anos sem o consentimento dos pais ou responsáveis legais.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>5. Transferência Internacional</h4>
+                        <p>Seus dados podem ser transferidos para países que oferecem nível adequado de proteção, sempre em conformidade com a LGPD.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>6. Contato do Encarregado de Dados (DPO)</h4>
+                        <p>Para questões relacionadas à proteção de dados, entre em contato:</p>
+                        <ul>
+                            <li>E-mail: dpo@stylusconcept.com</li>
+                            <li>WhatsApp: +55 (77) 98802-4793</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>7. Autoridade Nacional de Proteção de Dados (ANPD)</h4>
+                        <p>Você tem o direito de apresentar reclamações à ANPD caso considere que seus direitos foram violados.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

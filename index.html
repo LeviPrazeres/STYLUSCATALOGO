@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stylus Concept - Onde Moda Encontra Identidade</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <!-- Só o LCP (hero): evita competir com imagens abaixo da dobra -->
+    <link rel="preload" as="image" href="images/NOVOfundo3.jpeg" fetchpriority="high">
+    <!-- Menos pesos = menos bytes na rede (ajuste se faltar algum estilo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+    <link rel="stylesheet" href="home-styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="navbar-content">
+                <a href="index.html">
+                    <img src="images/logo.png" alt="Stylus Concept" class="logo" height="48" decoding="async">
+                </a>
+                <div class="nav-icons">
+                    <button class="icon-btn cart-btn" id="cartBtn">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <p class="hero-brand" data-aos="fade-down">Coleção Outono–Inverno 2026</p>
+            <h1 class="hero-title" data-aos="fade-up" data-aos-delay="200">
+                Camadas, texturas<br>e atitude fria
+            </h1>
+            <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">
+                A nova coleção Stylus Concept chega com tons profundos, peças versáteis e o conforto que a estação pede
+            </p>
+            <a href="catalogo.html" class="btn-catalog" data-aos="zoom-in" data-aos-delay="600">
+                <i class="fas fa-shopping-bag"></i> Acesse Nosso Catálogo
+            </a>
+        </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Destaques: botas/bolsas + paletas (o hero acima já leva ao catálogo) -->
+    <section class="oi-unified" aria-label="Destaques da coleção Outono-Inverno">
+        <div class="oi-unified-panel-wrap">
+            <div class="container">
+                <div class="oi-unified-panel" data-aos="fade-up">
+                    <div class="oi-unified-block oi-unified-block-boots">
+                        <h3 class="oi-unified-block-heading"><i class="fas fa-shoe-prints" aria-hidden="true"></i><i class="fas fa-bag-shopping" aria-hidden="true"></i> Botas e bolsas em destaque</h3>
+                        <p class="oi-unified-block-lead">Do catálogo para você — clique no produto para ver detalhes e adicionar ao carrinho.</p>
+                        <div class="brand-carousel-container home-boots-carousel">
+                            <button type="button" class="carousel-btn prev" data-brand="boots" aria-label="Anterior">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="brand-carousel" id="carousel-boots">
+                                <div class="carousel-loading">
+                                    <i class="fas fa-spinner fa-spin"></i> Carregando destaques...
+                                </div>
+                            </div>
+                            <button type="button" class="carousel-btn next" data-brand="boots" aria-label="Próximo">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="oi-unified-catalog-cta">
+                            <a href="catalogo.html?destaque=botas-bolsas" class="btn-brand-more">Ver mais tendências no catálogo <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="oi-unified-divider" aria-hidden="true"></div>
+
+                    <div class="oi-unified-block oi-unified-block-palettes">
+                        <h3 class="oi-unified-block-heading">Cores em destaque</h3>
+                        <p class="oi-unified-block-lead">As cores que você vai querer usar o tempo todo nesta estação — escolha o seu tom e monte o look que chama atenção por onde passa.</p>
+                        <div class="palette-products-grid">
+                            <article class="palette-product-block">
+                                <div class="palette-product-header">
+                                    <h4 class="palette-product-title">Tons terrosos e neutros quentes</h4>
+                                    <p class="palette-product-hint">Aconchego e sofisticação em terracota, caramelo e neutros quentes — perfeitos para sobrepor e brilhar.</p>
+                                </div>
+                                <div class="brand-carousel-container palette-carousel-wrap">
+                                    <button type="button" class="carousel-btn prev" data-brand="palette-0" aria-label="Anterior">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <div class="brand-carousel" id="carousel-palette-0">
+                                        <div class="carousel-loading">
+                                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                                        </div>
+                                    </div>
+                                    <button type="button" class="carousel-btn next" data-brand="palette-0" aria-label="Próximo">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                                <div class="oi-unified-catalog-cta">
+                                    <a href="catalogo.html?paleta=quente" class="btn-brand-more">Ver mais no catálogo <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                                </div>
+                            </article>
+
+                            <article class="palette-product-block">
+                                <div class="palette-product-header">
+                                    <h4 class="palette-product-title">Tons frios e profundos</h4>
+                                    <p class="palette-product-hint">Profundidade e atitude em tons frios — para um visual poderoso sem esforço.</p>
+                                </div>
+                                <div class="brand-carousel-container palette-carousel-wrap">
+                                    <button type="button" class="carousel-btn prev" data-brand="palette-1" aria-label="Anterior">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <div class="brand-carousel" id="carousel-palette-1">
+                                        <div class="carousel-loading">
+                                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                                        </div>
+                                    </div>
+                                    <button type="button" class="carousel-btn next" data-brand="palette-1" aria-label="Próximo">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                                <div class="oi-unified-catalog-cta">
+                                    <a href="catalogo.html?paleta=frio" class="btn-brand-more">Ver mais no catálogo <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Balão de Ajuda -->
+    <div class="help-tooltip" id="helpTooltip">
+        <div class="help-tooltip-content">
+            <div class="help-tooltip-header">
+                <h3><i class="fas fa-lightbulb"></i> Como usar o site</h3>
+                <button class="help-tooltip-close" id="helpTooltipClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="help-tooltip-body">
+                <div class="help-step">
+                    <div class="help-step-number">1</div>
+                    <div class="help-step-content">
+                        <h4><i class="fas fa-mouse-pointer"></i> Clique no produto</h4>
+                        <p>Clique em qualquer produto para ver os detalhes, cores e tamanhos disponíveis</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-number">2</div>
+                    <div class="help-step-content">
+                        <h4><i class="fas fa-shopping-cart"></i> Adicione ao carrinho</h4>
+                        <p>Escolha o tamanho e cor desejados, depois clique em "Adicionar ao Carrinho"</p>
+                    </div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-number">3</div>
+                    <div class="help-step-content">
+                        <h4><i class="fas fa-whatsapp"></i> Finalize sua compra</h4>
+                        <p>Ao fechar o carrinho, você será redirecionado para o WhatsApp para finalizar sua compra</p>
+                    </div>
+                </div>
+            </div>
+            <div class="help-tooltip-footer">
+                <button class="help-tooltip-dismiss" id="helpTooltipDismiss">
+                    <i class="fas fa-check"></i> Entendi!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão de Ajuda Flutuante -->
+    <div class="help-floating-btn" id="helpFloatingBtn">
+        <i class="fas fa-question-circle"></i>
+        <span class="help-floating-text">Como usar?</span>
+    </div>
+
+    <!-- Brands Section -->
+    <section class="brands">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Conheça Nossas Marcas</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                As grifes que traduzem o estilo da Stylus Concept.<br>
+                Explore peças exclusivas que unem elegância, conforto e autenticidade.
+            </p>
+            
+            <!-- Jorge Bischoff - Feminina -->
+            <div class="brand-showcase" data-aos="fade-up" data-aos-delay="100">
+                <div class="brand-showcase-header">
+                    <div class="brand-info">
+                        <h3 class="brand-showcase-name">Jorge Bischoff</h3>
+                        <p class="brand-showcase-description">Sofisticação em couro premium • Feminino</p>
+                    </div>
+                    <a href="catalogo.html?marca=jorge" class="btn-brand-more">
+                        Ver Mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="brand-carousel-container">
+                    <button class="carousel-btn prev" data-brand="jorge">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="brand-carousel" id="carousel-jorge">
+                        <!-- Produtos serão carregados aqui via JavaScript -->
+                        <div class="carousel-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" data-brand="jorge">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Luiza Barcelos - Feminina -->
+            <div class="brand-showcase" data-aos="fade-up" data-aos-delay="200">
+                <div class="brand-showcase-header">
+                    <div class="brand-info">
+                        <h3 class="brand-showcase-name">Luiza Barcelos</h3>
+                        <p class="brand-showcase-description">Modernidade e conforto • Feminino</p>
+                    </div>
+                    <a href="catalogo.html?marca=luiza" class="btn-brand-more">
+                        Ver Mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="brand-carousel-container">
+                    <button class="carousel-btn prev" data-brand="luiza">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="brand-carousel" id="carousel-luiza">
+                        <div class="carousel-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" data-brand="luiza">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    </div>
+                </div>
+                
+            <!-- Mini Melissa - Infantil -->
+            <div class="brand-showcase" data-aos="fade-up" data-aos-delay="300">
+                <div class="brand-showcase-header">
+                    <div class="brand-info">
+                        <h3 class="brand-showcase-name">Mini Melissa</h3>
+                        <p class="brand-showcase-description">Charme e diversão para os pequenos • Infantil</p>
+                    </div>
+                    <a href="catalogo.html?marca=mini" class="btn-brand-more">
+                        Ver Mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="brand-carousel-container">
+                    <button class="carousel-btn prev" data-brand="melissa">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="brand-carousel" id="carousel-melissa">
+                        <div class="carousel-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" data-brand="melissa">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    </div>
+                </div>
+                
+            <!-- Klin - Infantil -->
+            <div class="brand-showcase" data-aos="fade-up" data-aos-delay="400">
+                <div class="brand-showcase-header">
+                    <div class="brand-info">
+                        <h3 class="brand-showcase-name">Klin</h3>
+                        <p class="brand-showcase-description">Qualidade e conforto para crianças • Infantil</p>
+                    </div>
+                    <a href="catalogo.html?marca=klin" class="btn-brand-more">
+                        Ver Mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="brand-carousel-container">
+                    <button class="carousel-btn prev" data-brand="klin">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="brand-carousel" id="carousel-klin">
+                        <div class="carousel-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" data-brand="klin">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    </div>
+                </div>
+                
+            <!-- Mizuno - Masculina -->
+            <div class="brand-showcase" data-aos="fade-up" data-aos-delay="500">
+                <div class="brand-showcase-header">
+                    <div class="brand-info">
+                        <h3 class="brand-showcase-name">Mizuno</h3>
+                        <p class="brand-showcase-description">Performance e estilo esportivo • Masculino</p>
+                    </div>
+                    <a href="catalogo.html?marca=mizuno" class="btn-brand-more">
+                        Ver Mais <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="brand-carousel-container">
+                    <button class="carousel-btn prev" data-brand="mizuno">
+                        <i class="fas fa-chevron-left"></i>
+                        </button>
+                    <div class="brand-carousel" id="carousel-mizuno">
+                        <div class="carousel-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" data-brand="mizuno">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trending Section -->
+    <section class="trending">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Mais tendências OI 26</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Camadas, calçados fechados e acessórios em couro — explore o que combina com a estação
+            </p>
+
+            <div class="trending-grid">
+                <a href="catalogo.html?categoria=roupas&tipo=blusa" class="trending-card" data-aos="fade-up" data-aos-delay="50">
+                    <div class="trending-image">
+                        <img src="images/raoupas.jpg" alt="Roupas - Malhas e blusas para o frio" loading="lazy" decoding="async">
+                        <span class="trending-badge">Novo</span>
+                </div>
+                    <div class="trending-content">
+                        <h3>Malhas e blusas</h3>
+                        <p>Sofisticação e conforto para sobrepor com casacos e jaquetas</p>
+                        <div class="trending-link">
+                            Explorar <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                </a>
+                
+                <a href="catalogo.html?categoria=calcados&tipo=sapato" class="trending-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="trending-image">
+                        <img src="images/calçados.jpg" alt="Calçados - Sapatos para a estação fria" loading="lazy" decoding="async">
+                        <span class="trending-badge hot">Em Alta</span>
+                    </div>
+                    <div class="trending-content">
+                        <h3>Sapatos fechados</h3>
+                        <p>Linhas limpas para trabalhar ou sair à noite</p>
+                        <div class="trending-link">
+                            Explorar <i class="fas fa-arrow-right"></i>
+                </div>
+                    </div>
+                </a>
+                
+                <a href="catalogo.html?categoria=acessorios&tipo=bolsa" class="trending-card" data-aos="fade-up" data-aos-delay="150">
+                    <div class="trending-image">
+                        <img src="images/acessorios.jpg" alt="Acessórios - Bolsas de Couro" loading="lazy" decoding="async">
+                        <span class="trending-badge bestseller">Mais Vendido</span>
+                    </div>
+                    <div class="trending-content">
+                        <h3>Bolsas de Couro</h3>
+                        <p>Investimento que nunca sai de moda</p>
+                        <div class="trending-link">
+                            Explorar <i class="fas fa-arrow-right"></i>
+                </div>
+                    </div>
+                </a>
+                    </div>
+                </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-image" data-aos="fade-right">
+                    <img src="images/NOVOFUNDO1.jpeg" alt="Stylus Concept — Coleção Outono-Inverno" loading="lazy" decoding="async">
+                    <div class="about-image-overlay">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                </div>
+                <div class="about-content" data-aos="fade-left">
+                    <h2 class="section-title">Sobre a Stylus Concept</h2>
+                    <p>
+                        Na <strong>Stylus Concept</strong>, acreditamos que moda é expressão. 
+                        Cada peça é escolhida para traduzir autenticidade, conforto e elegância 
+                        — sempre com um toque contemporâneo.
+                    </p>
+                    <p>
+                        Mais do que uma loja, somos um espaço onde você encontra peças que 
+                        contam sua história, refletem sua personalidade e elevam sua presença 
+                        em cada ocasião.
+                    </p>
+
+                    <div class="about-features">
+                        <div class="feature-item">
+                            <i class="fas fa-gem"></i>
+                            <div>
+                                <h4>Qualidade Premium</h4>
+                                <p>Marcas selecionadas e peças exclusivas</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-heart"></i>
+                            <div>
+                                <h4>Atendimento Personalizado</h4>
+                                <p>Consultoria de estilo para você</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <h4>Coleções Exclusivas</h4>
+                                <p>Peças únicas que refletem tendências</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">O Que Dizem Nossas Clientes</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Experiências reais de quem confia na Stylus Concept
+            </p>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Adoro comprar aqui! Sempre encontro algo que combina comigo. 
+                        As peças são lindas e o atendimento é impecável."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h4>Maria Silva</h4>
+                            <p>Cliente há 2 anos</p>
+                </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Qualidade excepcional! Cada compra é um investimento certeiro. 
+                        Recomendo de olhos fechados!"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h4>Ana Costa</h4>
+                            <p>Cliente há 1 ano</p>
+                </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Peças maravilhosas e atendimento diferenciado. 
+                        A Stylus entende exatamente o que procuro!"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h4>Juliana Santos</h4>
+                            <p>Cliente há 3 anos</p>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter-content" data-aos="zoom-in">
+                <div class="newsletter-text">
+                    <h2>Siga a Stylus e Viva o Estilo Todos os Dias</h2>
+                    <p>Acompanhe nossas redes sociais e inspire-se com looks, novidades e muito mais</p>
+                </div>
+                <div class="social-links-large">
+                    <a href="https://www.instagram.com/stylusconcept?igsh=MTUzdHY5Mjg4MW90bg==" target="_blank" class="social-btn instagram">
+                        <i class="fab fa-instagram"></i>
+                        @stylusconcept
+                    </a>
+                    <a href="https://wa.me/5577988024793" target="_blank" class="social-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        (77) 98802-4793
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.png" alt="Stylus Concept" class="footer-logo" loading="lazy" decoding="async" height="45">
+                    <p class="footer-desc">Onde moda encontra identidade.<br>Elegância e sofisticação em cada peça.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/stylusconcept?igsh=MTUzdHY5Mjg4MW90bg==" target="_blank" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/5577988024793" target="_blank" class="social-link">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Produtos</h4>
+                        <ul class="footer-list">
+                            <li><a href="catalogo.html#roupas" class="footer-link">Roupas</a></li>
+                            <li><a href="catalogo.html#calcados" class="footer-link">Calçados</a></li>
+                            <li><a href="catalogo.html#acessorios" class="footer-link">Acessórios</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Suporte</h4>
+                        <ul class="footer-list">
+                            <li><a href="#" class="footer-link" data-modal="contatoModal">Contato</a></li>
+                            <li><a href="#" class="footer-link" data-modal="trocasModal">Trocas e Devoluções</a></li>
+                            <li><a href="#" class="footer-link" data-modal="faqModal">FAQ</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <ul class="footer-list">
+                            <li><a href="#" class="footer-link" data-modal="privacidadeModal">Política de Privacidade</a></li>
+                            <li><a href="#" class="footer-link" data-modal="termosModal">Termos de Uso</a></li>
+                            <li><a href="#" class="footer-link" data-modal="lgpdModal">LGPD</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Stylus Concept. Todos os direitos reservados.</p>
+                <p class="footer-love">Feito com <i class="fas fa-heart"></i> para você</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal do Carrinho -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-modal-content">
+            <div class="cart-header">
+                <h3>Seu Carrinho</h3>
+                <button class="close-cart" id="closeCart">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <!-- Itens do carrinho serão inseridos aqui -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <strong>Total: R$ <span id="cartTotal">0,00</span></strong>
+                </div>
+                <button class="btn btn-primary btn-block" id="checkoutBtn">
+                    <i class="fab fa-whatsapp"></i>
+                    Finalizar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes do Produto -->
+    <div class="product-modal" id="productModal">
+        <div class="product-modal-content">
+            <div class="product-modal-header">
+                <button class="close-product-modal" id="closeProductModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="product-modal-body" id="productModalBody">
+                <!-- Conteúdo do produto será inserido aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Contato -->
+    <div class="support-modal" id="contatoModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-envelope"></i> Contato</h3>
+                <button class="close-support-modal" data-modal="contatoModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fab fa-whatsapp"></i>
+                        <div>
+                            <h4>WhatsApp</h4>
+                            <p>+55 (77) 98802-4793</p>
+                            <a href="https://wa.me/5577988024793" target="_blank" class="contact-btn">Conversar no WhatsApp</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-instagram"></i>
+                        <div>
+                            <h4>Instagram</h4>
+                            <p>@stylusconcept</p>
+                            <a href="https://www.instagram.com/stylusconcept?igsh=MTUzdHY5Mjg4MW90bg==" target="_blank" class="contact-btn">Seguir no Instagram</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>E-mail</h4>
+                            <p>contato@stylusconcept.com</p>
+                            <a href="mailto:contato@stylusconcept.com" class="contact-btn">Enviar E-mail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Trocas e Devoluções -->
+    <div class="support-modal" id="trocasModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> Trocas e Devoluções</h3>
+                <button class="close-support-modal" data-modal="trocasModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="policy-content">
+                    <h4>Política de Trocas e Devoluções</h4>
+                    <div class="policy-section">
+                        <h5><i class="fas fa-clock"></i> Prazo</h5>
+                        <p>Você tem até 7 dias corridos após o recebimento do produto para solicitar troca ou devolução.</p>
+                    </div>
+                    <div class="policy-section">
+                        <h5><i class="fas fa-check-circle"></i> Condições</h5>
+                        <ul>
+                            <li>Produto deve estar em perfeito estado</li>
+                            <li>Etiquetas e embalagens originais</li>
+                            <li>Produto não pode ter sido usado</li>
+                            <li>Nota fiscal deve estar em dia</li>
+                        </ul>
+                    </div>
+                    <div class="policy-section">
+                        <h5><i class="fas fa-undo"></i> Como Solicitar</h5>
+                        <p>Entre em contato conosco via WhatsApp ou Instagram com o número do pedido e motivo da troca/devolução.</p>
+                    </div>
+                    <div class="policy-section">
+                        <h5><i class="fas fa-truck"></i> Frete</h5>
+                        <p>O frete de retorno fica por conta do cliente, exceto em casos de defeito do produto.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de FAQ -->
+    <div class="support-modal" id="faqModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-question-circle"></i> Perguntas Frequentes</h3>
+                <button class="close-support-modal" data-modal="faqModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="faq-content">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Como faço meu pedido?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Adicione os produtos desejados ao carrinho, selecione os tamanhos e clique em "Finalizar Pedido" para ser direcionado ao WhatsApp.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Quais formas de pagamento vocês aceitam?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Aceitamos PIX, cartão de crédito, débito e boleto bancário. O pagamento é processado de forma segura.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Qual o prazo de entrega?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>O prazo de entrega varia de 3 a 7 dias úteis, dependendo da sua localização e disponibilidade do produto.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Como saber meu tamanho?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Consulte nossa tabela de medidas disponível no Instagram ou entre em contato conosco para orientação personalizada.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Vocês fazem envios para todo o Brasil?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Sim, fazemos envios para todo o território nacional. O valor do frete é calculado automaticamente no checkout.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Política de Privacidade -->
+    <div class="support-modal" id="privacidadeModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-shield-alt"></i> Política de Privacidade</h3>
+                <button class="close-support-modal" data-modal="privacidadeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="legal-content">
+                    <div class="legal-section">
+                        <h4>1. Informações que Coletamos</h4>
+                        <p>Coletamos informações que você nos fornece diretamente, como nome, e-mail, telefone e endereço quando você faz um pedido ou entra em contato conosco.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>2. Como Usamos suas Informações</h4>
+                        <ul>
+                            <li>Processar e entregar seus pedidos</li>
+                            <li>Comunicar sobre produtos e promoções</li>
+                            <li>Melhorar nossos serviços</li>
+                            <li>Atender solicitações de suporte</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>3. Compartilhamento de Informações</h4>
+                        <p>Não vendemos, alugamos ou compartilhamos suas informações pessoais com terceiros, exceto quando necessário para processar pedidos ou cumprir obrigações legais.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>4. Segurança dos Dados</h4>
+                        <p>Implementamos medidas de segurança técnicas e organizacionais para proteger suas informações contra acesso não autorizado, alteração, divulgação ou destruição.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>5. Seus Direitos</h4>
+                        <p>Você tem o direito de acessar, corrigir, excluir ou portar seus dados pessoais. Para exercer esses direitos, entre em contato conosco.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>6. Alterações na Política</h4>
+                        <p>Esta política pode ser atualizada periodicamente. Notificaremos sobre mudanças significativas através do nosso site ou por e-mail.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Termos de Uso -->
+    <div class="support-modal" id="termosModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-file-contract"></i> Termos de Uso</h3>
+                <button class="close-support-modal" data-modal="termosModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="legal-content">
+                    <div class="legal-section">
+                        <h4>1. Aceitação dos Termos</h4>
+                        <p>Ao acessar e usar este site, você concorda em cumprir e estar sujeito aos seguintes termos e condições de uso.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>2. Uso do Site</h4>
+                        <ul>
+                            <li>Você pode navegar e comprar produtos em nosso site</li>
+                            <li>É proibido usar o site para atividades ilegais</li>
+                            <li>Você é responsável por manter a confidencialidade de sua conta</li>
+                            <li>Não é permitido reproduzir conteúdo sem autorização</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>3. Produtos e Preços</h4>
+                        <p>Reservamo-nos o direito de alterar preços, produtos e disponibilidade a qualquer momento. Os preços mostrados são válidos apenas no momento da compra.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>4. Pedidos e Pagamentos</h4>
+                        <ul>
+                            <li>Pedidos estão sujeitos à disponibilidade do produto</li>
+                            <li>Pagamentos são processados de forma segura</li>
+                            <li>Reservamo-nos o direito de recusar pedidos</li>
+                            <li>Impostos e taxas podem ser aplicados conforme legislação</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>5. Limitação de Responsabilidade</h4>
+                        <p>Não nos responsabilizamos por danos diretos, indiretos, incidentais ou consequenciais resultantes do uso do site ou produtos.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>6. Propriedade Intelectual</h4>
+                        <p>Todo o conteúdo do site, incluindo textos, imagens, logotipos e design, é propriedade da Stylus Concept e está protegido por leis de direitos autorais.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de LGPD -->
+    <div class="support-modal" id="lgpdModal">
+        <div class="support-modal-content">
+            <div class="support-modal-header">
+                <h3><i class="fas fa-gavel"></i> Lei Geral de Proteção de Dados (LGPD)</h3>
+                <button class="close-support-modal" data-modal="lgpdModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="support-modal-body">
+                <div class="legal-content">
+                    <div class="legal-section">
+                        <h4>1. Conformidade com a LGPD</h4>
+                        <p>A Stylus Concept está em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018) e se compromete a proteger seus dados pessoais.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>2. Base Legal para Tratamento</h4>
+                        <ul>
+                            <li><strong>Execução de contrato:</strong> Para processar pedidos e entregas</li>
+                            <li><strong>Consentimento:</strong> Para comunicações de marketing</li>
+                            <li><strong>Interesse legítimo:</strong> Para melhorar nossos serviços</li>
+                            <li><strong>Obrigação legal:</strong> Para cumprir obrigações fiscais</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>3. Seus Direitos como Titular</h4>
+                        <ul>
+                            <li><strong>Acesso:</strong> Solicitar informações sobre seus dados</li>
+                            <li><strong>Correção:</strong> Corrigir dados incompletos ou incorretos</li>
+                            <li><strong>Exclusão:</strong> Solicitar remoção de dados desnecessários</li>
+                            <li><strong>Portabilidade:</strong> Transferir dados para outro fornecedor</li>
+                            <li><strong>Revogação:</strong> Retirar consentimento a qualquer momento</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>4. Dados de Menores</h4>
+                        <p>Não coletamos intencionalmente dados de menores de 18 anos sem o consentimento dos pais ou responsáveis legais.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>5. Transferência Internacional</h4>
+                        <p>Seus dados podem ser transferidos para países que oferecem nível adequado de proteção, sempre em conformidade com a LGPD.</p>
+                    </div>
+                    
+                    <div class="legal-section">
+                        <h4>6. Contato do Encarregado de Dados (DPO)</h4>
+                        <p>Para questões relacionadas à proteção de dados, entre em contato:</p>
+                        <ul>
+                            <li>E-mail: dpo@stylusconcept.com</li>
+                            <li>WhatsApp: +55 (77) 98802-4793</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script defer src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script defer src="brands-loader.js"></script>
+    <script defer src="cart-handler.js"></script>
+    <script defer src="home-script.js"></script>
+</body>
+</html>
